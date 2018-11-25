@@ -43,7 +43,7 @@
    + Variável (Du)  Duração (Mt-Mi)
      Lembrando que essa variável marca também se a ligação sofreu
      desconto de 15% na tarifação.
-   + Variável (Tag) Tipo de ligação ("TarifPadr","TarifDif","TarifComDesc")
+   + Variável (Tag) Tipo de ligação ("TarifPadr","tarifComDesc","TarifDif","TarifComDescAdic")
      TarifPadr: Mi >= 8:00h e Mt < 18:00h
      TarifComDesc: Mi >= 18:00h e Mt < 8:00h
      TarifDif: !=TarifPadr e !=TarifComDesc
@@ -71,10 +71,10 @@ minuto 40 e dura até o minuto 10 das 9 horas, durando, portanto, 30min.
 | minIni/minFin |   |   |   |   |   |   |   | 40 | 10 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
 
 
-| mi | mt | du em Seg | tipo      |        tarifPadr/seg | VlrLigacao |
-|  8 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 |
-| 17 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 |
-|    |    |           |           |                      |            |
+| mi | mt | du em Seg | tipo      |        tarifPadr/seg | VlrLigacao | Classe |
+|  8 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 | Valida |
+| 17 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 | Valida |
+|    |    |           |           |                      |            |        |
 #+TBLFM: @2$3=@2$2*60::@2$6=@2$3*@2$5::@3$3=@3$2*60::@3$6=@3$3*@3$5
 C-u C-c *
 
