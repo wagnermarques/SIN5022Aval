@@ -1,0 +1,13 @@
+
+#Arquivos de back do emacs
+\#*
+.#*
+~*
+
+#diretorio target do maven
+target/
+
+#arquivos de projeto do eclipse, eles sao recriados qdo o projeto e importado
+.classpath
+.project
+.settings

@@ -1,0 +1,124 @@
+#+Title: Documentação Sobre a Realização dos Testes
+
+#+BEGIN_SRC emacs-lisp
+(setq org-time-stamp-formats
+      '("<%d-%m-%Y-%a>" . "<%Y-%m-%d %a %H:%M:%S>"))
+#+END_SRC
+
+#+RESULTS:
+: (<%d-%m-%Y-%a> . <%Y-%m-%d %a %H:%M:%S>)
+
+
+* Pressupostos assumidos
+  Considerando que a cobrança é por minuto, é necessário saber se
+  frações de minutos serão cobrados ou não.
+  
+  Por padrão a aplicação tarifa frações de minutos na razão de
+  segundos. Isso quer dizer que se uma ligação começa às 7:30h, o
+  horário inicial é menor que 8:00h porque, a princípio, faz mais
+  sentido. 
+  Entretanto, pode ser que se a cobrança é por minuto, minutos
+  incompletos poderiam não ser válidos para cobrança o que faz até algum
+  sentido também porque um cliente pode dizer que esse minuto incompleto
+  poderia não ser tarifado. Nesse caso uma ligação que inicia às 7:30
+  poderia ter seu momento de início considerado como sendo 8:00h.
+  Portanto, conforme citado, esta aplicação cobra frações de minutos à
+  razão de segundos o que na prática pode-se dizer que a cobrança não
+  é por minutos, mas por segundos. Entretanto, para que o
+  comportamento da aplicação não cobre frações de minutos, ou seja,
+  somente minutos cheios, é só passar a opçao
+  -DtarifaFracaoDeMinutos=false, por padrão é utilizado true.
+  Não tenho certeza no momento em que estou escrevento essa
+  documentação se deu tempo de fazer as duas implementações, favor
+  consultar o wiki do projeto no github.
+  
+
+* Particionamento em classes de equivalência
+  
+** Identifição do domínio de entrada
+   + Variável (Mi)  Momento de inicio da chamada
+   + Variável (Mt)  Momento de término da chamada
+   + Variável (Du)  Duração (Mt-Mi)
+     Lembrando que essa variável marca também se a ligação sofreu
+     desconto de 15% na tarifação.
+   + Variável (Tag) Tipo de ligação ("TarifPadr","TarifDif","TarifComDesc")
+     TarifPadr: Mi >= 8:00h e Mt < 18:00h
+     TarifComDesc: Mi >= 18:00h e Mt < 8:00h
+     TarifDif: !=TarifPadr e !=TarifComDesc
+
+   A ligação é tagueada, ou seja, rotulada. Essa é uma característica
+   de ligações que tem início no período de desconto de 50% mas
+   terminam no horário de cobrança cheia. Mesmo que essa ligação dure
+   mais de 60min, recebendo mais 15% de desconto, essa ligação ainda é diferenciada.
+
+** Classes de Equivalência para horário de Tarifa Padrão (TarifPadr)  0.40/min (Sem Desc Adicional)
+   M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min
+| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
+| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
+| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
+| Du = (Mt-Mi)        | Du < 60            | Du >= 60             |
+No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 -
+15%/min.
+Nesse periodo das 8 até quase 18 com Du < 60 ela nunca sera tagueada
+como tag = dif ou tag = comDesc. Por isso considerar essa variável nas
+classes de equivalência seria um erro porque é uma redundante.
+
+Um exemplo de ligação é apresentado no abaixo de uma ligação como se inicia no
+minuto 40 e dura até o minuto 10 das 9 horas, durando, portanto, 30min.
+| h             | 1 | 2 | 3 | 4 | 5 | 6 | 7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 |
+| minIni/minFin |   |   |   |   |   |   |   | 40 | 10 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+
+
+** Classes de Equivalencia para horário de Tarifa Padrão (TafifPadr) + Desconto Adicional
+   M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min menos 15% de desconto.
+| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
+| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
+| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
+| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
+No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 - 15%/min.
+
+** Classes de Equivalência para horário de tarifa com desconto (TarifComDesc) de 50% 
+*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice)
+    Mi >= 18h e Mt > 8h 
+| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
+| Mi                  | Mi >= DD/MM/AA:18h | Mi >= DD/MM/AA:8h    |
+| Mt                  | Mt >= DD/MM/AA:8h  | Mt qualquer          |
+| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
+
+*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa)
+    Mi >=8 e Mt > 18h
+| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
+| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
+| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
+| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
+
+** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc) de 50% mais 15% de desconto
+*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice) + Desc Adicional
+    Mi >= 18h e Mt > 8h 
+| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
+| Mi                  | Mi >= DD/MM/AA:18h | Mi >= DD/MM/AA:8h    |
+| Mt                  | Mt >= DD/MM/AA:8h  | Mt qualquer          |
+| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
+
+*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa) + Desc Adicional
+    Mi >=8 e Mt > 18h
+| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
+| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
+| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
+| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
+
+ C-u C-u C-c . (Insere timestamp)
+ C-u C-c * (Recalcula tabela)
+ C-' (Editar formula)
+* Casos de testes
+
+#+TBLFM: $4=$3-$2::@2$4=@2$3-@2-$1
+
+
+
+* Informações para realização do cálculo da tarifa paga
+
+| Inicio: DD/MM/AA | Início: Horario | Término: DD/MM/AA | Término: Horario | Vlr |
+|                  |                 |                   |                  |     |
+
+  o

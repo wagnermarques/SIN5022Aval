@@ -1,0 +1,6 @@
+#+Title: Documentação Sobre a Realização dos Testes
+
+* Sites consultados 
+https://www.petrikainulainen.net/programming/testing/junit-5-tutorial-running-unit-tests-with-maven/
+https://junit.org/junit5/docs/current/user-guide/#writing-tests-display-names
+https://github.com/junit-team/junit5-samples/

@@ -1,0 +1,17 @@
+package usp;
+
+
+public class App{
+
+    //A tarifa padrão para chamadas de longa distância é de R$0,40 por minuto
+    private double tarifaPadrao = 0.4D;
+
+
+    
+    public static void main( String[] args )
+    {
+        System.out.println( "Hello World!" );
+    }
+
+    public calculaValorDaChamada(
+}
