@@ -3,11 +3,22 @@ package usp;
 
 public class App{
 
-    //A tarifa padrão para chamadas de longa distância é de R$0,40 por minuto
+    public static boolean tarifaFracaoDeMinutos = true;
+    
+	//A tarifa padrï¿½o para chamadas de longa distï¿½ncia ï¿½ de R$0,40 por minuto
     private double tarifaPadrao = 0.4D;
     
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
-    }
+    	//consulta paramertros de inicializacao do sistema que foram recebidos
+    	for(int i = 0; i < args.length; i++) {
+    		//averigua se algum deles tarifaFracaoDeMinutos    		
+    		if (args[i].contains("tarifaFracaoDeMinutos")) {
+        	 String[] tarifaFracaoDeMinutosParameter = args[i].split("=");
+        	 if(tarifaFracaoDeMinutosParameter[1].equals("false")) {
+        		 App.tarifaFracaoDeMinutos = false;
+        	 }
+         }	
+        }	
+    }	
 }
