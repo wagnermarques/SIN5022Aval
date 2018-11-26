@@ -74,8 +74,8 @@ minuto 40 e dura até o minuto 10 das 9 horas, durando, portanto, 30min.
 | mi | mt | du em Seg | tipo      |        tarifPadr/seg | VlrLigacao | Classe |
 |  8 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 | Valida |
 | 17 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 | Valida |
-|    |    |           |           |                      |            |        |
-#+TBLFM: @2$3=@2$2*60::@2$6=@2$3*@2$5::@3$3=@3$2*60::@3$6=@3$3*@3$5
+
+#+TBLFM: @3$3=@3$2*60::@3$6=@3$3*@3$5::@4$3=@4$2*60::@4$6=@4$3*@4$5
 C-u C-c *
 
 ** Classes de Equivalencia para horário de Tarifa Padrão (TafifPadr) + Desconto Adicional
@@ -85,6 +85,12 @@ C-u C-c *
 | Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
 | Du = (Mt-Mi)        | Du > 60            | Du < 60              |
 No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 - 15%/min.
+
+| mi | mt | 3660 | tipo      |        tarifPadr/seg | VlrLigacao | Classe |
+|  8 | 61 | 3660 | TarifPadr | 0.006666666666666667 |      20.74 | Valida |
+| 17 | 61 | 3660 | TarifPadr | 0.006666666666666667 |      20.74 | Valida |
+#+TBLFM: $3=@2$2*60::@2$6=@2$3*@2$5-(@2$3*@2$5*0.15)::@3$3=@3$2*60::@3$6=@3$3*@3$5-(@3$3*@3$5*0.15)
+
 
 ** Classes de Equivalência para horário de tarifa com desconto (TarifComDesc) de 50% 
 *** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice)

@@ -101,6 +101,17 @@ public class AppTest
 //    	| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
 //    	No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 - 15%/min.
 
+        LocalDateTime mi3 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0);
+        LocalDateTime mt3 = mi3.plusMinutes(61);        
+        double vlr3 = 20.74;
+        String tipoDeTarificacao3 = "TarifPadr_ComDescAdicional";
+      
+        //pra terminar ainda no tarifPadr tem que ser um minutos a menos
+        //e menos 1 segundo porque nao pode chegar a 18 inclusive
+        LocalDateTime mi4 = LocalDateTime.of(2018,Month.NOVEMBER,25,17,0).minusMinutes(1).minusSeconds(1);
+        LocalDateTime mt4 = mi4.plusMinutes(61);
+        double vlr4 = 20.74;
+        String tipoDeTarificacao4 = "TarifPadr_ComDescAdicional";
         
         
         
@@ -139,7 +150,9 @@ public class AppTest
     	
         return Arrays.asList(new Object[][]{
         	{mi1,mt1,vlr1,tipoDeTarificacao1},
-        	{mi2,mt2,vlr2,tipoDeTarificacao2}                
+        	{mi2,mt2,vlr2,tipoDeTarificacao2},
+        	{mi3,mt3,vlr3,tipoDeTarificacao3},
+        	{mi4,mt4,vlr4,tipoDeTarificacao4}
         });
         
     }
@@ -160,16 +173,28 @@ public class AppTest
         double vlr2 = 23.6;
         String tipoDeTarificacao2 = "TarifPadr";
 
+
+        //Invalidas para tarifPadr com descontoadicional
+        LocalDateTime mi3 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0).minusSeconds(1);
+        LocalDateTime mt3 = mi3.plusMinutes(61);        
+        double vlr3 = 20.74;
+        String tipoDeTarificacao3 = "TarifPadr_ComDescAdicional";
+
+        LocalDateTime mi4 = LocalDateTime.of(2018,Month.NOVEMBER,25,18,0).plusSeconds(1);
+        LocalDateTime mt4 = mi4.plusMinutes(61);
+        double vlr4 = 20.74;
+        String tipoDeTarificacao4 = "TarifPadr_ComDescAdicional";
+        
+        
         return Arrays.asList(new Object[][]{
             {mi1,mt1,vlr1,tipoDeTarificacao1},
-            {mi2,mt2,vlr2,tipoDeTarificacao2}                
+            {mi2,mt2,vlr2,tipoDeTarificacao2},
+            {mi3,mt3,vlr3,tipoDeTarificacao3}
         });
 
     }
 
-    
-    
-    
+
     @AfterEach
     void tearDown() {
         //System.out.println("### @AfterEach void tearDown() {...");

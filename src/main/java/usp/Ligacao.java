@@ -39,7 +39,6 @@ public class Ligacao{
     	this.du = Duration.between(mi, mt);//mt exclusive
         this.status = "ENCERRADA";
     }
-    
      
     public double calculaValorDaChamada( ) throws Exception
     {    	
@@ -57,30 +56,38 @@ public class Ligacao{
     	System.out.println(this.tarifPadr/60);
     	return this.tarifPadr/60;
     }
+        
+    private boolean isHorarioDeTarifPadr() {
+		return this.mi.getHour() >= 8 && this.mt.getHour() < 18 ? true : false;
+	}
     
-	private double calculaValorDaChamadaComFracaoDeMinutosNaRazaoDeSegundos() {
-		this.du = Duration.between(this.mi,this.mt);		
-		this.vlrDaLigacao = this.tarifPadrPorSegundo() * du.getSeconds();
-		System.out.println(vlrDaLigacao);
-		System.out.println(vlrDaLigacao);
-		System.out.println(vlrDaLigacao);
+    private boolean isHorarioDeTarifacaoDiferenciada() {
+    	return this.mi.getHour() < 8 || this.mi.getHour() >= 18;
+    }
+    
+	private double calculaValorDaChamadaComFracaoDeMinutosNaRazaoDeSegundos() {				
+		double vlrLocalDaLigacao = 0.0;		
+		
+		if(isHorarioDeTarifPadr()) vlrLocalDaLigacao = calculaVlrNoHorarioDeTarifaPadrao();		
+		if(temDescontoAdicional()) vlrLocalDaLigacao = vlrLocalDaLigacao - vlrLocalDaLigacao*this.descAdicional;
+		
 		//usando o BigDecimal so pra arrendondar
+		this.vlrDaLigacao = vlrLocalDaLigacao;
 		BigDecimal vlrArrendondado  = new BigDecimal(this.vlrDaLigacao).setScale(3, RoundingMode.HALF_EVEN);
-		System.out.println(vlrArrendondado.doubleValue());
-		System.out.println(vlrArrendondado.doubleValue());
-		System.out.println(vlrArrendondado.doubleValue());
 		return vlrArrendondado.doubleValue();
+	}
+
+	private double calculaVlrNoHorarioDeTarifaPadrao() {
+		return this.tarifPadrPorSegundo() * this.du.getSeconds();		
 	}
 
 	//Helper Methods pra detectar tipo de ligacao
 	private boolean temDescontoAdicional() {
-		System.out.println("private boolean temDescontoAdicional() {...");
-		System.out.println(60*60);
+		//System.out.println("private boolean temDescontoAdicional() {...");		
 		return this.du.getSeconds() >= 60*60 ? true:false; //59 minutos expressos em segundos 
 	}	
-	private boolean isTarifPadr() {
-		return this.mi.getHour() >= 8 && this.mt.getHour() < 18 ? true : false;
-	}
+	
+	
 	
 	public String getTipoDeTarifacao() throws Exception {
 		System.out.println("public String getTipoDeTarifacao() throws Exception {...");
@@ -92,7 +99,7 @@ public class Ligacao{
 		String strTpoLig = "#";
 		
 		System.out.println("this.mi.getHour() >= 8 "+ this.mi.getHour());			
-		if(isTarifPadr()) {
+		if(isHorarioDeTarifPadr()) {
 			strTpoLig = "TarifPadr";
 		}
 		
