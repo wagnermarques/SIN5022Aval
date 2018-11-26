@@ -109,7 +109,7 @@ public class AppTest
         //pra terminar ainda no tarifPadr tem que ser um minutos a menos
         //e menos 1 segundo porque nao pode chegar a 18 inclusive
         LocalDateTime mi4 = LocalDateTime.of(2018,Month.NOVEMBER,25,17,0).minusMinutes(1).minusSeconds(1);
-        LocalDateTime mt4 = mi4.plusMinutes(61);
+        LocalDateTime mt4 = mi4.plusMinutes(60);
         double vlr4 = 20.74;
         String tipoDeTarificacao4 = "TarifPadr_ComDescAdicional";
         
@@ -123,6 +123,13 @@ public class AppTest
 //    	| Mt                  | Mt >= DD/MM/AA:8h  | Mt qualquer          |
 //    	| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
 
+        //LocalDateTime mi5 = LocalDateTime.of(2018,Month.NOVEMBER,25,18,0);
+        //LocalDateTime mt5 = mi5.plusMinutes(59);
+        //double vlr5 = 20.74;
+        //String tipoDeTarificacao5 = "TarifPadr_ComDescAdicional";
+
+        
+        
 //    	*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa)
 //    	    Mi >=8 e Mt > 18h
 //    	| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
