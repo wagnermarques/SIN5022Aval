@@ -39,6 +39,7 @@
    + Momento de inicio da chamada
    + Momento de término da chamada
      
+
 ** Implicações sobre o domínio de entrada relevantes para os testes
    + O dominio de entrada define o tipo de ligação
      TarifPadr: Ligação com inicio entre às 8h (inclusive) e 18h (exclusive)
@@ -53,28 +54,93 @@
 
 ** Classes de Equivalência para horário de Tarifa Padrão (TarifPadr)  0.40/min (Sem Desc Adicional)
    M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min
-| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
-| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
-| Du = (Mt-Mi)        | Du < 60            | Du >= 60             |
-No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 -
-15%/min.
-Nesse periodo das 8 até quase 18 com Du < 60 ela nunca sera tagueada
-como tag = dif ou tag = comDesc. Por isso considerar essa variável nas
-classes de equivalência seria um erro porque é uma redundante.
+| Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
+| Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
+| Mt                  | DD/MM/AA:08:00:00 < Mi < DD/MM/AA:18:00:00  | DD/MM/AA:18:00:00 <= Mt < DD+1/MM/AA:08:00:00 |
+| Du = (Mt-Mi)        | Du < 60                                     | Du >= 60                                      |
+Uma ligação será considerada como cobrança cheia, ou seja, tarifa
+padrão (TarifPadr) sem desconto adicional (Sem Desc Adicional) se a
+ligação tiver seu momento inicial (Mi) entre 8 da manhã (inclusive) e
+18h (exclusive).
+Essa ligação pode terminar muito rápida, 8h e 1 segundo, por exemplo,
+mas tem que terminar até as 18:00h (exclusive); Tem que terminar
+porque se terminar em outra faixa de horário não é mais uma ligação do
+tipo de tarifa padrão, viraria tarifa diferenciada.
+Além disso, considerando que uma ligação pode ter desconto de 15 por
+cento caso seja maior que 60 min, então, como essas classes de
+equivalencia é para ligações de tarifa padrão sem desconto adicional,
+então a duração da ligação deve ser menor que 60min. Mais adiante são
+estabelecidas classes de equivalencias para ligações com desconto que
+explora essa questão. Por isso uma duração maior que 60 neste caso é
+uma classe inválida.
 
-Um exemplo de ligação é apresentado no abaixo de uma ligação como se inicia no
-minuto 40 e dura até o minuto 10 das 9 horas, durando, portanto, 30min.
-| h             | 1 | 2 | 3 | 4 | 5 | 6 | 7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 |
-| minIni/minFin |   |   |   |   |   |   |   | 40 | 10 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+*** Casos de testes para essas classes de equivalencia
+    Casos de testes para clases de equivalência para ligações de
+    Tarifa Padrão Sem Desconto Adicional.
+
+#+CAPTION: Casos de Testes para Ligações Com Tarifa Padrao Sem Desconto Adicional
+#+NAME:   TarifPadrSemDescAdic
+| obs                                | TC Num | mi                           | mt       |   |
+| Vlr Típico Classe Válida           |      1 | 04/Nov/2015 15:00:00         | mi+20Min |   |
+| Vlr Típico Classe Inválida         |      2 | 04/Nov/2015 19:00:00         | mi+20Min |   |
+| Explora limite 8h em ponto         |      3 | 04/Nov/2015 15:08:00         | mi+59Min |   |
+| Explora limite anterior as 8h      |      4 | 04/Nov/2015 15:08:00 - 1 Seg | mi+59Min |   |
+| Explora limite posterior as 8h     |      5 | 04/Nov/2015 15:08:00 + 1 Seg | mi+59Min |   |
+| Explora limite anterior as 18:00h  |      6 | 04/Nov/2015 17:00:59         | mi+59Min |   |
+| Explora limite posterior as 18:00h |      7 | 04/Nov/2015 18:00:01         | mi+59Min |   |
 
 
-| mi | mt | du em Seg | tipo      |        tarifPadr/seg | VlrLigacao | Classe |
-|  8 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 | Valida |
-| 17 | 59 |      3540 | TarifPadr | 0.006666666666666667 |       23.6 | Valida |
 
-#+TBLFM: @3$3=@3$2*60::@3$6=@3$3*@3$5::@4$3=@4$2*60::@4$6=@4$3*@4$5
-C-u C-c *
+#+NAME: TC1 Vlr Típico Classe Válida
+#+BEGIN_SRC java 
+    	String label0="###[1] [TarifPadr SemDescAdic] (pegando um vlr tipico de uma classe valida) ";
+        LocalDateTime mi0= LocalDateTime.of(2015,Month.NOVEMBER,04,15,0);
+        LocalDateTime mt0 = mi0.plusMinutes(20);        
+        double vlr0 = 8.0;
+        String tipoDeTarificacao0 = "TarifPadr";
+
+    	String label0="###[2] [TarifPadr SemDescAdic] (pegando um vlr tipico de uma classe INvalida) ";
+        LocalDateTime mi0= LocalDateTime.of(2015,Month.NOVEMBER,04,19,0);
+        LocalDateTime mt0 = mi0.plusMinutes(20);        
+        double vlr0 = 8.0;
+        String tipoDeTarificacao0 = "TarifPadr";
+
+        String label1="###[3] [TarifPadr SemDescAdic] (Explora vlr limite 8h: Ligacao de 59min que comeca 8h em ponto) ";    	
+        LocalDateTime mi1 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0);
+        LocalDateTime mt1 = mi1.plusMinutes(59);        
+        double vlr1 = 23.6;
+        String tipoDeTarificacao1 = "TarifPadr";              
+
+        String label1="###[4] [TarifPadr SemDescAdic] (Explora vlr limite anterior as 8h: Ligacao de 59min que comeca 7h:59min:59Seg";
+        LocalDateTime mt1 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(2);//8 horas menos dois segundos
+        LocalDateTime mi1 = mt1.minusMinutes(59);
+        double vlr1 = 23.6;
+        String tipoDeTarificacao1 = "TarifPadr";
+
+        String label2="###[5] [TarifPadr SemDescAdic] (Explora vlr limite Posterior 8h: ligacao de 59 min que comeca as 8h:00:01) ";
+        LocalDateTime mi2 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).plusSeconds(1);
+        LocalDateTime mt2 = mi2.plusMinutes(59);
+        double vlr2 = 23.6;
+        String tipoDeTarificacao2 = "TarifPadr";
+
+        String label3="###[6] [TarifPadr SemDescAdic] (Explora vlr limite anterior 18h: ligacao de 59 min que termina as 18 menos 1 segundo) ";
+        LocalDateTime mi3 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds((59*60)-1);
+        LocalDateTime mt3 = mi3.plusMinutes(59);
+        double vlr3 = 23.6;
+        String tipoDeTarificacao3 = "TarifPadr";
+
+        String label2="###[7] [TarifPadr SemDescAdic] (Explora vlr limite posterior as 18h: ligacao de 59min que termina as 18:00:01)";
+        LocalDateTime mi2 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).).plusSeconds(1);
+        LocalDateTime mt2 = mi2.plusMinutes(59);
+        double vlr2 = 23.6;
+        String tipoDeTarificacao2 = "TarifPadr";
+#+END_SRC
+
+        
+    
+                                
+
+
 
 >>>>>###[1] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (pegando um vlr tipico de uma classe valida) 
 >>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:TarifPadr
@@ -106,68 +172,71 @@ C-u C-c *
 
 
 
+** Classes de Equivalência para horário de Tarifa Padrão (TafifPadr) + Desconto Adicional
+| Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
+| Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
+| Mt                  | DD/MM/AA:08:00:00 < Mi < DD/MM/AA:18:00:00  | DD/MM/AA:18:00:00 <= Mt < DD+1/MM/AA:08:00:00 |
+| Du = (Mt-Mi)        | Du >= 60                                    | Du < 60                                       |
+Essas classes de equivalência são semelhantes às anteriores, mas agora
+queremos observar o comportamento da duração da ligação nas condições
+de tarifa padrão. Por isso, agora ligações que duram 60min ou mais faz
+parte de uma classe válida e menor que 60 uma classe inválida.
 
 
-
-** Classes de Equivalencia para horário de Tarifa Padrão (TafifPadr) + Desconto Adicional
-   M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min menos 15% de desconto.
-| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
-| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
-| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
-No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 - 15%/min.
-
-| mi | mt | 3660 | tipo      |        tarifPadr/seg | VlrLigacao | Classe |
-|  8 | 61 | 3660 | TarifPadr | 0.006666666666666667 |      20.74 | Valida |
-| 17 | 61 | 3660 | TarifPadr | 0.006666666666666667 |      20.74 | Valida |
-#+TBLFM: $3=@2$2*60::@2$6=@2$3*@2$5-(@2$3*@2$5*0.15)::@3$3=@3$2*60::@3$6=@3$3*@3$5-(@3$3*@3$5*0.15)
-
-
-** Classes de Equivalência para horário de Tarifa com Desconto (TarifComDesc) Sem Desc Adic de 50% 
+** Classes de Equivalência para horário de Tarifa com Desconto (TarifComDesc) Sem Desc Adic
 | Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
-| Mt                  | DD/MM/AA:18:00:01 <= Mt < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
+| Mt                  | DD/MM/AA:18:00:00 < Mt < DD+1/MM/AA:08:00:00  | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
 | Du = (Mt-Mi)        | Du < 60                                       | Du < 60                                     |
 
-** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc + DescAdicional) de 50% 
-    Mi >=8 e Mt > 18h
-| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
-| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
-| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
 
- C-u C-u C-c . (Insere timestamp)
- C-u C-c * (Recalcula tabela)
- C-' (Editar formula)
+** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc + DescAdicional) de 50% 
+| Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
+| Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+| Mt                  | DD/MM/AA:18:00:00 < Mt < DD+1/MM/AA:08:00:00  | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
+| Du = (Mt-Mi)        | Du >= 60                                      | Du < 60                                     |
 
 
 ** Classes de Equivalência para horário de tarifa diferencial (TarifDif)
-*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice)
-    Mi >= 18h e Mt > 8h 
-| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-| Mi                  | Mi >= DD/MM/AA:18h | Mi >= DD/MM/AA:8h    |
-| Mt                  | Mt >= DD/MM/AA:8h  | Mt qualquer          |
-| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
+*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao Sem Desc Adicional (Vice)
+| Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
+| Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+| Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
+| Du = (Mt-Mi)        | Du < 60                                     | Du qualquer                                 |
+Momento inicial das 0 as quase 8 (horário com desconto) mas que
+terminam (Mt) de 08:00h em ponto em diante. Não precisa testar
+ligacoes que começam as 18:00h porque mesmo que dure até as 8:00h da
+manhã do dia seguinte 
+
+*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  Com Desc Adicional (Vice)
+| Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
+| Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+| Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
+| Du = (Mt-Mi)        | Du > 60                                     | Du qualquer                                 |
+
+
+*** Para o caso de inicio na tarifa com desconto (parte da tarde) e termino na tarifa padrao Com Desconto Adicional  (Vice)
+| Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
+| Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+| Mt                  | Mt >= DD+1/MM/AA:08:00:00                     | Mt qualquer                                 |
+| Du = (Mt-Mi)        | Du > 60                                       | Du < 60                                     |
+Aqui só pega ligações muito longas, até improváveis de acontecerem
+mas... Obviamente se uma ligação ir de um dia anterior até o próximo
+dia depois das 8, sempre será maior que 60 min.
+Mt qualquer, significa que se o Mi inicial começar num intervalo que
+não é de tarifação com desconto, não importa qdo termina porque não
+vai dar pra testar uma ligação que começa num horário com desconto e
+termina num horário sem desconto.
 
 *** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa)
-    Mi >=8 e Mt > 18h
-| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
-| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
-| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
+| Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
+| Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
+| Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
+| Du = (Mt-Mi)        | Du < 60                                     | Du > 60                                       |
 
 
 
-* Casos de testes
-
-#+TBLFM: $4=$3-$2::@2$4=@2$3-@2-$1
-
-
-
-* Informações para realização do cálculo da tarifa paga
-
-| Inicio: DD/MM/AA | Início: Horario | Término: DD/MM/AA | Término: Horario | Vlr |
-|                  |                 |                   |                  |     |
-
-  o
-
+* temp
+ C-u C-u C-c . (Insere timestamp)
+ C-u C-c * (Recalcula tabela)
+ C-' (Editar formula)

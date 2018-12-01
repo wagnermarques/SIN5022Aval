@@ -108,7 +108,7 @@ public class AppTest
         String tipoDeTarificacao2 = "TarifPadr";
                                 
         String label3="###[6] [TarifPadr SemDescAdic] (Explora vlr limite anterior 18h: ligacao de 59 min que termina as 18 menos 1 segundo) ";
-        LocalDateTime mi3 = LocalDateTime.of(2015,Month.NOVEMBER,04,17,0).minusSeconds((59*60)-1);
+        LocalDateTime mi3 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds((59*60)-1);
         LocalDateTime mt3 = mi3.plusMinutes(59);
         double vlr3 = 23.6;
         String tipoDeTarificacao3 = "TarifPadr";
@@ -236,7 +236,7 @@ public class AppTest
         
 
         String label2="###[7] [TarifPadr SemDescAdic] (Explora vlr limite posterior as 18h: ligacao de 59min que termina as 18:00:01)";
-        LocalDateTime mi2 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(59*60);
+        LocalDateTime mi2 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).plusSeconds(1);
         LocalDateTime mt2 = mi2.plusMinutes(59);
         double vlr2 = 23.6;
         String tipoDeTarificacao2 = "TarifPadr";
