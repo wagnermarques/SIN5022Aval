@@ -1,11 +1,16 @@
 package usp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+
+import java.time.Duration;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -38,17 +43,16 @@ public class AppTest
     @ParameterizedTest
     @MethodSource("metodoProvedorDeCasosDeTestesParaClassesDeEquivalenciasValidas")
     @DisplayName("Testa com particoes V-A-L-I-D-A-S de Equivalencia e Vlrs Limite")
-    void testaComParticoes_VALIDAS_DeEquivalenciaEVlrsLimites(LocalDateTime mi, LocalDateTime mt, double vlrFromOracle,String tpoDeTarifacaoFromOracle) {
+    void testaComParticoes_VALIDAS_DeEquivalenciaEVlrsLimites(String label, LocalDateTime mi, LocalDateTime mt, double vlrFromOracle,String tpoDeTarifacaoFromOracle) {
+    	System.out.println(">>>>>"+label);
     	Ligacao ligacao = new Ligacao(mi);
     	ligacao.encerrarLigacao(mt);     
         try {        	
-        	System.out.println("Asserts..."); 
-        	System.err.println(ligacao.getDu().getSeconds());
-        	System.out.println();
 			assertEquals(vlrFromOracle,ligacao.calculaValorDaChamada());
 			assertEquals(tpoDeTarifacaoFromOracle,ligacao.getTipoDeTarifacao());
+			System.out.println(">>>>> Tipo de Tarifacao esperado = "+tpoDeTarifacaoFromOracle+" / Obtido:"+ligacao.getTipoDeTarifacao());
+			System.out.println(">>>>>"+mi.toString()+" - "+mt.toString()+"du="+(Duration.between(mi, mt).getSeconds()/60)+" VlrEsperado="+vlrFromOracle+"/VlrObtido="+ligacao.calculaValorDaChamada());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -57,12 +61,16 @@ public class AppTest
     @ParameterizedTest
     @MethodSource("metodoProvedorDeCasosDeTestesParaClassesDeEquivalencias_IN_Validas")
     @DisplayName("Testa com particoes I-N-V-A-L-I-D-A-S de Equivalencia e Vlrs Limite")
-    void testaComParticoes_INVALIDAS_DeEquivalenciaEVlrsLimites(LocalDateTime mi, LocalDateTime mt, double vlrFromOracle,String tpoDeTarifacaoFromOracle) {
+    void testaComParticoes_INVALIDAS_DeEquivalenciaEVlrsLimites(String label, LocalDateTime mi, LocalDateTime mt, double vlrFromOracle,String tpoDeTarifacaoFromOracle) {
+    	System.out.println(">>>>>"+label);    	
+    	
     	Ligacao ligacao = new Ligacao(mi);
     	ligacao.encerrarLigacao(mt);     
         try {        	
 			assertNotEquals(vlrFromOracle,ligacao.calculaValorDaChamada());
 			assertNotEquals(tpoDeTarifacaoFromOracle,ligacao.getTipoDeTarifacao());
+			System.out.println(">>>>> Tipo de Tarifacao esperado = "+tpoDeTarifacaoFromOracle+" / Obtido:"+ligacao.getTipoDeTarifacao());
+			System.out.println(">>>>>"+mi.toString()+" - "+mt.toString()+"du="+(Duration.between(mi, mt).getSeconds()/60)+" VlrEsperado="+vlrFromOracle+"/VlrObtido="+ligacao.calculaValorDaChamada());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,26 +81,38 @@ public class AppTest
     static Collection<Object[]> metodoProvedorDeCasosDeTestesParaClassesDeEquivalenciasValidas() {
     	
 //    	** Classes de Equivalência para horário de Tarifa Padrão (TarifPadr)  0.40/min (Sem Desc Adicional)
-//    	   M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min
+//    	   Mi >= 8h e M<18h Cobrança com preço cheio 0,4 p/min
 //    	| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
 //    	| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
 //    	| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
 //    	| Du = (Mt-Mi)        | Du < 60            | Du >= 60             |
     	
     	//CLASSES DE EQUIVALENCIAS VALIDAS COM SEUS VALORES LIMITES
-    	//inicia 8 horas em ponto e dura 20 minutos 
-        LocalDateTime mi1 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0);
+    	//inicia 8 horas em ponto e dura 20 minutos
+    	String label0="###[1] [TarifPadr SemDescAdic] (pegando um vlr tipico de uma classe valida) ";
+        LocalDateTime mi0= LocalDateTime.of(2015,Month.NOVEMBER,04,15,0);
+        LocalDateTime mt0 = mi0.plusMinutes(20);        
+        double vlr0 = 8.0;
+        String tipoDeTarificacao0 = "TarifPadr";
+        
+        String label1="###[3] [TarifPadr SemDescAdic] (Explora vlr limite 8h: Ligacao de 59min que comeca 8h em ponto) ";    	
+        LocalDateTime mi1 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0);
         LocalDateTime mt1 = mi1.plusMinutes(59);        
         double vlr1 = 23.6;
-        String tipoDeTarificacao1 = "TarifPadr";
-        
-        LocalDateTime mi2 = LocalDateTime.of(2018,Month.NOVEMBER,25,17,0);
+        String tipoDeTarificacao1 = "TarifPadr";              
+    
+        String label2="###[5] [TarifPadr SemDescAdic] (Explora vlr limite Posterior 8h: ligacao de 59 min que comeca as 8h:00:01) ";
+        LocalDateTime mi2 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).plusSeconds(1);
         LocalDateTime mt2 = mi2.plusMinutes(59);
         double vlr2 = 23.6;
         String tipoDeTarificacao2 = "TarifPadr";
-        
-       
-        
+                                
+        String label3="###[6] [TarifPadr SemDescAdic] (Explora vlr limite anterior 18h: ligacao de 59 min que termina as 18 menos 1 segundo) ";
+        LocalDateTime mi3 = LocalDateTime.of(2015,Month.NOVEMBER,04,17,0).minusSeconds((59*60)-1);
+        LocalDateTime mt3 = mi3.plusMinutes(59);
+        double vlr3 = 23.6;
+        String tipoDeTarificacao3 = "TarifPadr";
+
 //    	** Classes de Equivalencia para horário de Tarifa Padrão (TafifPadr) + Desconto Adicional
 //    	   M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min menos 15% de desconto.
 //    	| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
@@ -100,20 +120,13 @@ public class AppTest
 //    	| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
 //    	| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
 //    	No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 - 15%/min.
-
-        LocalDateTime mi3 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0);
-        LocalDateTime mt3 = mi3.plusMinutes(61);        
-        double vlr3 = 20.74;
-        String tipoDeTarificacao3 = "TarifPadr_ComDescAdicional";
-      
-        //pra terminar ainda no tarifPadr tem que ser um minutos a menos
-        //e menos 1 segundo porque nao pode chegar a 18 inclusive
-        LocalDateTime mi4 = LocalDateTime.of(2018,Month.NOVEMBER,25,17,0).minusMinutes(1).minusSeconds(1);
-        LocalDateTime mt4 = mi4.plusMinutes(60);
-        double vlr4 = 20.74;
-        String tipoDeTarificacao4 = "TarifPadr_ComDescAdicional";
         
-        
+        String label4="###[9] [TarifPadr+DescAdic] (Explora vlr limite posterior 60min: ligacao de 120min) ";
+        LocalDateTime mi4 = LocalDateTime.of(2015,Month.NOVEMBER,04,15,0);
+        LocalDateTime mt4 = mi4.plusMinutes(120);
+        double vlr4 = 40.80;
+        String tipoDeTarificacao4 = "TarifPadr-DescAdicional";
+                      
         
 //    	** Classes de Equivalência para horário de tarifa com desconto (TarifComDesc) de 50% 
 //    	*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice)
@@ -123,20 +136,50 @@ public class AppTest
 //    	| Mt                  | Mt >= DD/MM/AA:8h  | Mt qualquer          |
 //    	| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
 
-        //LocalDateTime mi5 = LocalDateTime.of(2018,Month.NOVEMBER,25,18,0);
-        //LocalDateTime mt5 = mi5.plusMinutes(59);
-        //double vlr5 = 20.74;
-        //String tipoDeTarificacao5 = "TarifPadr_ComDescAdicional";
+    	//CLASSES DE EQUIVALENCIAS VALIDAS PARA HORARIOS COM TARIFAS COM DESCONTO
+    	//inicio entre 18 horas (inclusive) e 8:00h (exclusive) do dia posterior 
+    	String label5="###[1 10] [TarifComDesc SemDescAdic] (pegando um vlr tipico de uma classe valida) ";
+        LocalDateTime mi5= LocalDateTime.of(2015,Month.NOVEMBER,04,0,0);
+        LocalDateTime mt5 = mi5.plusMinutes(20);        
+        double vlr5 = 4.0;
+        String tipoDeTarificacao5 = "TarifComDesc";
+        
+        String label6="###[3 12] [TarifComDesc SemDescAdic] (Explora vlr limite 18h: Ligacao de 59min que comeca 18h em ponto) ";    	
+        LocalDateTime mi6 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0);
+        LocalDateTime mt6 = mi6.plusMinutes(59);        
+        double vlr6 = 11;
+        String tipoDeTarificacao6 = "TarifComDesc";              
+    
+        String label7="###[5 15] [TarifComDesc SemDescAdic] (Explora vlr limite Posterior 18h: ligacao de 59 min que comeca as 18h:00:01) ";
+        LocalDateTime mi7 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).plusSeconds(1);
+        LocalDateTime mt7 = mi7.plusMinutes(59);
+        double vlr7 = 11;
+        String tipoDeTarificacao7 = "TarifComDesc";
+                                
+        String label8="###[6 16] [TarifComDesc SemDescAdic] (Explora vlr limite anterior 8h do dia Seguinte: ligacao de 59 min que termina as 8 menos 1 segundo) ";
+        LocalDateTime mi8 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(1);
+        LocalDateTime mt8 = mi8.plusMinutes(59);
+        double vlr8 = 11;
+        String tipoDeTarificacao8 = "TarifComDesc";
 
         
         
 //    	*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa)
 //    	    Mi >=8 e Mt > 18h
 //    	| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-//    	| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
+//    	| Mi                  | 8h <= Mi <18    | Mi <  DD/MM/AA:8h    |
 //    	| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
 //    	| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
 
+        String label9="###[6 16 26] [TarifDif SemDescAdic (TarifPadr->TarifComDesc] (Explora Vlr Tipo de Classe Valida ) ";
+        LocalDateTime mi9 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(1);
+        LocalDateTime mt9 = mi9.plusMinutes(59);
+        double vlr9 = 11;
+        String tipoDeTarificacao9 = "TarifComDesc";
+        
+        
+        
+        
 //    	** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc) de 50% mais 15% de desconto
 //    	*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice) + Desc Adicional
 //    	    Mi >= 18h e Mt > 8h 
@@ -152,14 +195,22 @@ public class AppTest
 //    	| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
 //    	| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
 
-
     	
     	
         return Arrays.asList(new Object[][]{
-        	{mi1,mt1,vlr1,tipoDeTarificacao1},
-        	{mi2,mt2,vlr2,tipoDeTarificacao2},
-        	{mi3,mt3,vlr3,tipoDeTarificacao3},
-        	{mi4,mt4,vlr4,tipoDeTarificacao4}
+        	//M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min
+        	{label0, mi0, mt0, vlr0, tipoDeTarificacao0}, 
+        	{label1, mi1, mt1, vlr1, tipoDeTarificacao1}, 
+        	{label2, mi2, mt2, vlr2, tipoDeTarificacao2},
+        	{label3, mi3, mt3, vlr3, tipoDeTarificacao3},
+        	{label4, mi4, mt4, vlr4, tipoDeTarificacao4},
+        	//TarifComDesc
+
+        	{label5, mi5, mt5, vlr5, tipoDeTarificacao5}, 
+        	{label6, mi6, mt6, vlr6, tipoDeTarificacao6},
+        	{label7, mi7, mt7, vlr7, tipoDeTarificacao7},
+        	{label8, mi8, mt8, vlr8, tipoDeTarificacao8}
+
         });
         
     }
@@ -170,33 +221,90 @@ public class AppTest
         
     	//Classes Invalidas para tarifPadr sem desconto
     	//OS asserts sao notequals no teste
-        LocalDateTime mt1 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0).minusSeconds(2);//8 horas menos dois segundos
+    	String label0="###[2] [TarifPadr SemDescAdic] (pegando um vlr tipico de uma classe INvalida) ";
+        LocalDateTime mi0= LocalDateTime.of(2015,Month.NOVEMBER,04,19,0);
+        LocalDateTime mt0 = mi0.plusMinutes(20);        
+        double vlr0 = 8.0;
+        String tipoDeTarificacao0 = "TarifPadr";
+
+    	
+        String label1="###[4] [TarifPadr SemDescAdic] (Explora vlr limite anterior as 8h: Ligacao de 59min que comeca 7h:59min:59Seg";
+        LocalDateTime mt1 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(2);//8 horas menos dois segundos
         LocalDateTime mi1 = mt1.minusMinutes(59);
         double vlr1 = 23.6;
         String tipoDeTarificacao1 = "TarifPadr";
         
-        LocalDateTime mt2 = LocalDateTime.of(2018,Month.NOVEMBER,25,18,0).plusSeconds(2);//dois segundos apos as 18
-        LocalDateTime mi2 = mt2.minusMinutes(59);
+
+        String label2="###[7] [TarifPadr SemDescAdic] (Explora vlr limite posterior as 18h: ligacao de 59min que termina as 18:00:01)";
+        LocalDateTime mi2 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(59*60);
+        LocalDateTime mt2 = mi2.plusMinutes(59);
         double vlr2 = 23.6;
         String tipoDeTarificacao2 = "TarifPadr";
+        
 
+        String label3="###[8] [TarifPadr SemDescAdic] (Explora vlr limite 60min: ligacao de 60min)";
+        LocalDateTime mi3 = LocalDateTime.of(2015,Month.NOVEMBER,04,15,0);
+        LocalDateTime mt3 = mi3.plusMinutes(60);
+        double vlr3 = 23.6;
+        String tipoDeTarificacao3 = "TarifPadr";
 
-        //Invalidas para tarifPadr com descontoadicional
-        LocalDateTime mi3 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0).minusSeconds(1);
-        LocalDateTime mt3 = mi3.plusMinutes(61);        
-        double vlr3 = 20.74;
-        String tipoDeTarificacao3 = "TarifPadr_ComDescAdicional";
+        
+    	//Classes Invalidas para tarifComDes sem descontoAdicional
+        //
+    	String label4="###[2 11] [TarifComDesc SemDescAdic] (pegando um vlr tipico de uma classe INvalida) ";
+        LocalDateTime mi4= LocalDateTime.of(2015,Month.NOVEMBER,04,10,0);
+        LocalDateTime mt4 = mi4.plusMinutes(20);        
+        double vlr4 = 8.0;
+        String tipoDeTarificacao4 = "TarifPadr";
 
-        LocalDateTime mi4 = LocalDateTime.of(2018,Month.NOVEMBER,25,18,0).plusSeconds(1);
-        LocalDateTime mt4 = mi4.plusMinutes(61);
-        double vlr4 = 20.74;
-        String tipoDeTarificacao4 = "TarifPadr_ComDescAdicional";
+    	
+        String label5="###[4 13] [TarifComDesc SemDescAdic] (Explora vlr limite anterior as 18h: Ligacao de 59min que comeca 17h:59min:59Seg";
+        LocalDateTime mt5 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(2);//8 horas menos dois segundos
+        LocalDateTime mi5 = mt5.minusMinutes(59);
+        double vlr5 = 11;
+        String tipoDeTarificacao5 = "TarifComDesc";
+        
+
+        String label6="###[7 16] [TarifComDesc SemDescAdic] (Explora vlr limite posterior as 8h do dia seguinte: ligacao de 59min que termina as 8h do dia seguinte)";
+        LocalDateTime mi6 = LocalDateTime.of(2015,Month.NOVEMBER,05,8,0).minusMinutes(59);
+        LocalDateTime mt6 = mi6.plusMinutes(59);
+        double vlr6 = 11;//isso da outro valor
+        String tipoDeTarificacao6 = "TarifComDesc+DescAdic";
+        
+
+        String label7="###[8 17] [TarifComDesc SemDescAdic] (Explora vlr limite 60min: ligacao de 60min)";
+        LocalDateTime mi7 = LocalDateTime.of(2015,Month.NOVEMBER,04,0,0);
+        LocalDateTime mt7 = mi7.plusMinutes(60);
+        double vlr7 = 11;//teria que ter o desconto adicional
+        String tipoDeTarificacao7 = "TarifComDesc"; //essa tem desc adicional
+
+        
+//
+//        //Invalidas para tarifPadr com descontoadicional
+//        String label3 = "### ";
+//        LocalDateTime mi3 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0).minusSeconds(1);
+//        LocalDateTime mt3 = mi3.plusMinutes(61);        
+//        double vlr3 = 20.74;
+//        String tipoDeTarificacao3 = "TarifPadr+DescAdicional";
+//
+//        String label4 = "### ";
+//        LocalDateTime mi4 = LocalDateTime.of(2018,Month.NOVEMBER,25,18,0).plusSeconds(1);
+//        LocalDateTime mt4 = mi4.plusMinutes(61);
+//        double vlr4 = 20.74;
+//        String tipoDeTarificacao4 = "TarifPad+DescAdicional";
         
         
         return Arrays.asList(new Object[][]{
-            {mi1,mt1,vlr1,tipoDeTarificacao1},
-            {mi2,mt2,vlr2,tipoDeTarificacao2},
-            {mi3,mt3,vlr3,tipoDeTarificacao3}
+        	//tarifPadr
+        	{label0, mi0, mt0, vlr0, tipoDeTarificacao0},
+            {label1, mi1, mt1, vlr1, tipoDeTarificacao1},
+            {label2, mi2, mt2, vlr2, tipoDeTarificacao2},
+            {label3, mi3, mt3, vlr3, tipoDeTarificacao3},
+            //tarifComDesc
+            {label4, mi4, mt4, vlr4, tipoDeTarificacao4},
+            {label5, mi5, mt5, vlr5, tipoDeTarificacao5},
+            {label6, mi6, mt6, vlr6, tipoDeTarificacao6},
+            {label7, mi7, mt7, vlr7, tipoDeTarificacao7},                        
         });
 
     }

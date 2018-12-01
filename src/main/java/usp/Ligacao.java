@@ -5,18 +5,16 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-public class Ligacao{
-
+public class Ligacao{	
 	//Valores a serem cobrados na tarifa
 	//Fix-me: fixei aqui por simplicidade, poderia ser valores padroes da APPs
     private final double tarifPadr = 0.40; //tarifa padrao
-    private final double descNaTarifPadr = 0.50f; //desconto da tarifa com desconto
-    private final double descAdicional = 0.15f; //desconto adicional
+    private final double descNaTarifPadr = 0.50; //desconto da tarifa com desconto
+    private final double descAdicional = 0.15; //desconto adicional
     
     //Flag pra dizer que fracoes de minutos sao cobrados ou nao
     //por padrao sao cobrados
-    private final boolean tarifaFracaoDeMinutos = App.tarifaFracaoDeMinutos;
-    
+    private final boolean tarifaFracaoDeMinutos = App.tarifaFracaoDeMinutosAtivada;    
     //
     private LocalDateTime mi; //momento inicial
     private LocalDateTime mt; //momento final
@@ -27,7 +25,8 @@ public class Ligacao{
     //isso e relevante para calculo da duracao da chamada
     private String status; //"EM_ANDAMENTO" ou "ENCERRADA"
 	private double vlrDaLigacao;
-
+	private String tpoDeTarifacaoCalculada;
+	
     //construtor
     public Ligacao(LocalDateTime mi) {
     	this.mi = mi;
@@ -43,81 +42,81 @@ public class Ligacao{
     public double calculaValorDaChamada( ) throws Exception
     {    	
     	if(!this.status.equals("ENCERRADA")) throw new Exception("Nao he possivel calcular antes de a ligacao ser encerrada");
-    	if(tarifaFracaoDeMinutos) {
-    		return calculaValorDaChamadaComFracaoDeMinutosNaRazaoDeSegundos();
-    	}else {
-    		throw new Exception("Ainda nao implementado...");
-    	}        
-    }
-
-    //trabalhando com double porque supre a necessidade de 
-    //precisao de centesimos
-    private double tarifPadrPorSegundo() {
-    	System.out.println(this.tarifPadr/60);
-    	return this.tarifPadr/60;
-    }
-        
-    private boolean isHorarioDeTarifPadr() {
-		return this.mi.getHour() >= 8 && this.mt.getHour() < 18 ? true : false;
-	}
-    
-    private boolean isHorarioDeTarifacaoDiferenciada() {
-    	return this.mi.getHour() < 8 || this.mi.getHour() >= 18;
-    }
-    
-	private double calculaValorDaChamadaComFracaoDeMinutosNaRazaoDeSegundos() {				
-		double vlrLocalDaLigacao = 0.0;		
-		
-		if(isHorarioDeTarifPadr()) vlrLocalDaLigacao = calculaVlrNoHorarioDeTarifaPadrao();		
-		if(temDescontoAdicional()) vlrLocalDaLigacao = vlrLocalDaLigacao - vlrLocalDaLigacao*this.descAdicional;
-		
-		//usando o BigDecimal so pra arrendondar
-		this.vlrDaLigacao = vlrLocalDaLigacao;
-		BigDecimal vlrArrendondado  = new BigDecimal(this.vlrDaLigacao).setScale(3, RoundingMode.HALF_EVEN);
-		return vlrArrendondado.doubleValue();
-	}
-
-	private double calculaVlrNoHorarioDeTarifaPadrao() {
-		return this.tarifPadrPorSegundo() * this.du.getSeconds();		
-	}
-
-	//Helper Methods pra detectar tipo de ligacao
-	private boolean temDescontoAdicional() {
-		//System.out.println("private boolean temDescontoAdicional() {...");		
-		return this.du.getSeconds() >= 60*60 ? true:false; //59 minutos expressos em segundos 
-	}	
-	
-	
-	
-	public String getTipoDeTarifacao() throws Exception {
-		System.out.println("public String getTipoDeTarifacao() throws Exception {...");
-		if(!this.status.equals("ENCERRADA")) throw new Exception("Pra ver qual o tipo de tarifacao [Normal, Com Desconto ou Com Desc Adicional] a ligacao precisa estart encerrada");
-		
-		boolean temDescAdicional = false;
-		boolean tarifPadr = false;
-		boolean tarofDif = false;
-		String strTpoLig = "#";
-		
-		System.out.println("this.mi.getHour() >= 8 "+ this.mi.getHour());			
-		if(isHorarioDeTarifPadr()) {
-			strTpoLig = "TarifPadr";
-		}
-		
-		if(this.mt.getHour() >= 18 && this.mi.getHour() < 8) {
-			strTpoLig = "TarifComDesc";
-		}
-		
-		if(this.temDescontoAdicional()) strTpoLig += "_ComDescAdicional";
-		
-		System.out.println("strTpoLig = "+ strTpoLig);
-		return strTpoLig;
-	}
-
-
-	
-	//G e t t e r s   a n d   S e t t e r s
-	public Duration getDu() {
-		return du;
-	}
+    	    	
+    	LocalDateTime diaSeguinteAs8DaManha = mi.minusHours(mi.getHour()).plusHours(8);
     	
+    	if (this.heMesmoDia(this.mi, this.mt) && mi.getHour() > 0 && mt.getHour() < 8 && du.getSeconds() < 60*60) {
+    		//de 0 ate 8 (exclusive) com menos de 60 minutos (Chamada no horario TarifComDesc)
+    		this.tpoDeTarifacaoCalculada = "TarfComDesc";
+    		return this.du.getSeconds() * ((this.tarifPadr - (this.tarifPadr*this.descNaTarifPadr)) / 60);
+    		
+    	}else if(mi.getHour() >= 0 && mt.getHour() < 8 && du.getSeconds() > 60*60 && du.getSeconds() < 8*60*60) {
+    		//de 0 ate 8 (exclusive) com mais de 60 min (Chamada ainda no horario TarifComDesc *Com desconto adicional)
+    		this.tpoDeTarifacaoCalculada = "TarfComDes-DescAdicional";
+    		double vlr = this.du.getSeconds() * ((this.tarifPadr - (this.tarifPadr*this.descNaTarifPadr)) / 60);
+    		return vlr - (vlr*this.descAdicional);
+    		
+    	}else if(mi.getHour() > 0 && du.getSeconds() >= 8*60*60 ) {
+    		//de 0 e passou das 8 da manha, cobranca dif
+    		return cobra_TarifDif_comDescontoAdicional();
+    		
+    	}else if(this.heMesmoDia(this.mi, this.mt) && mi.getHour() >=8 && mt.getHour() < 18 && du.getSeconds() <60*60) {
+    		//Ligacao entre 8 e 18(exclusive) com menos de 60 min
+    		this.tpoDeTarifacaoCalculada = "TarifPadr";
+    		return this.du.getSeconds() * (this.tarifPadr/60);
+    		
+    	}else if(this.heMesmoDia(this.mi, this.mt) && mi.getHour() >=8 && mt.getHour() <18 && du.getSeconds() > 60*60 && du.getSeconds() < 9*60*60 ) {
+    		//Ligacao entre 8 e 18 (exclusive) com mais de 60 min
+    		this.tpoDeTarifacaoCalculada = "TarifPadr-DescAdicional";
+    		double vlr = this.du.getSeconds() * (this.tarifPadr/60);
+    		return vlr - (vlr*this.descAdicional);
+    		
+    	}else if(mi.getHour() >=8 && du.getSeconds() >= 9*60*60) {
+    		//Ligacao entre 8 e passa das 17 o que ha he diferenciada e com desconto
+    		return cobra_TarfDif_ComDescontoAdicional();
+    		
+    	}else if(this.heMesmoDia(this.mi, this.mt) && mi.getHour() >=18 && mt.isBefore(diaSeguinteAs8DaManha) && du.getSeconds() <= 60*60) {
+    		//Ligacao que inicia entre 17 e até 8 (exclusive) do dia seguinte com menos de 60 minutos
+    		return cobra_TarifComDesc_ComDescontoAdicional();
+    		
+    	}else if(mi.getHour() >= 18 && mt.isBefore(diaSeguinteAs8DaManha) &&  du.getSeconds() >= 60*60) {
+    		//Ligacao que comeca as 17 em diante passando de 60 min pode passar ate as 8(exclusive) do dia seguinte ao inicio da ligacao
+    		return cobra_TarifComDesc_ComDescontoAdicional();
+    	}
+		return 0;		
+    }
+
+	
+	private double cobra_TarifDif_comDescontoAdicional() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private double cobra_TarfDif_ComDescontoAdicional() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private double cobra_TarifComDesc_ComDescontoAdicional() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	
+	private boolean heMesmoDia(LocalDateTime mi2, LocalDateTime mt2) {
+		int diaI = this.mi.getDayOfMonth();
+		int mesI = this.mi.getMonthValue();
+		int anoI = this.mi.getYear();
+		
+		int diaT = this.mt.getDayOfMonth();
+		int mesT = this.mt.getMonthValue();		
+		int anoT = this.mt.getYear();		
+		
+		if (anoI == anoT && mesI == mesT && diaI == diaT) return true;
+		return false;
+	}
+
+	public String getTipoDeTarifacao() {
+		return this.tpoDeTarifacaoCalculada;
+	}    	
 }

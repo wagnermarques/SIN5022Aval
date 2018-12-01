@@ -36,21 +36,19 @@
 * Particionamento em classes de equivalência
   
 ** Identifição do domínio de entrada
-   + Variável (Mi)  Momento de inicio da chamada
-   + Variável (Mt)  Momento de término da chamada
-
-** Implicações das variáveis de entradas passíveis de testes
-   + Variável (Du)  Duração (Mt-Mi)
-     Lembrando que essa variável marca também se a ligação sofreu
-     desconto de 15% na tarifação.
-   + Variável (Tag) Tipo de ligação ("TarifPadr","tarifComDesc","TarifDif","TarifComDescAdic")
-     TarifPadr: Mi >= 8:00h e Mt < 18:00h
-     TarifComDesc: Mi >= 18:00h e Mt < 8:00h
-     TarifDif: !=TarifPadr e !=TarifComDesc
-     A ligação é tagueada, ou seja, rotulada. Essa é uma característica
-     de ligações que tem início no período de desconto de 50% mas
-     terminam no horário de cobrança cheia. Mesmo que essa ligação dure
-     mais de 60min, recebendo mais 15% de desconto, essa ligação ainda é diferenciada.
+   + Momento de inicio da chamada
+   + Momento de término da chamada
+     
+** Implicações sobre o domínio de entrada relevantes para os testes
+   + O dominio de entrada define o tipo de ligação
+     TarifPadr: Ligação com inicio entre às 8h (inclusive) e 18h (exclusive)
+     tarifComDesc: Ligação com início entre às 18h (inclusive) e as 8h
+     do dia seguinte (excluse)
+     TarifDif: Ligação com início dentro do período ou da TarifPadr ou
+     da TarifComDesc mas com término dentro do próximo tipo de tarifação
+   + Duração da chamada     
+     A Duração da chamada define se a ligação deve sofrer desconto de
+     15% na tarifação, independente do tipo de ligação 
 
 
 ** Classes de Equivalência para horário de Tarifa Padrão (TarifPadr)  0.40/min (Sem Desc Adicional)
@@ -78,6 +76,39 @@ minuto 40 e dura até o minuto 10 das 9 horas, durando, portanto, 30min.
 #+TBLFM: @3$3=@3$2*60::@3$6=@3$3*@3$5::@4$3=@4$2*60::@4$6=@4$3*@4$5
 C-u C-c *
 
+>>>>>###[1] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (pegando um vlr tipico de uma classe valida) 
+>>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:TarifPadr
+>>>>>2015-11-04T15:00 - 2015-11-04T15:20du=20 VlrEsperado=8.0/VlrObtido=8.0
+
+>>>>>###[2] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (pegando um vlr tipico de uma classe INvalida) 
+>>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:null
+>>>>>2015-11-04T19:00 - 2015-11-04T19:20du=20 VlrEsperado=8.0/VlrObtido=0.0
+
+>>>>>###[3] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (Explora vlr limite 8h: Ligacao de 59min que comeca 8h em ponto) 
+>>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:TarifPadr
+>>>>>2015-11-04T08:00 - 2015-11-04T08:59du=59 VlrEsperado=23.6/VlrObtido=23.6
+
+>>>>>###[4] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (Explora vlr limite anterior as 8h: Ligacao de 59min que comeca 7h:59min:59Seg
+>>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:TarfComDesc
+>>>>>2015-11-04T07:00:58 - 2015-11-04T07:59:58du=59 VlrEsperado=23.6/VlrObtido=11.8
+
+>>>>>###[5] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (Explora vlr limite Posterior 8h: ligacao de 59 min que comeca as 8h:00:01) 
+>>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:TarifPadr
+>>>>>2015-11-04T08:00:01 - 2015-11-04T08:59:01du=59 VlrEsperado=23.6/VlrObtido=23.6
+
+>>>>>###[6] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (Explora vlr limite anterior 18h: ligacao de 59 min que termina as 18 menos 1 segundo) 
+>>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:TarifPadr
+>>>>>2015-11-04T16:01:01 - 2015-11-04T17:00:01du=59 VlrEsperado=23.6/VlrObtido=23.6
+
+>>>>>###[7] M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min Sem Desc Adiconal (Explora vlr limite posterior as 18h: ligacao de 59min que termina as 18:00:01)
+>>>>> Tipo de Tarifacao esperado = TarifPadr / Obtido:null
+>>>>>2015-11-04T17:01 - 2015-11-04T18:00du=59 VlrEsperado=23.6/VlrObtido=0.0
+
+
+
+
+
+
 ** Classes de Equivalencia para horário de Tarifa Padrão (TafifPadr) + Desconto Adicional
    M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min menos 15% de desconto.
 | Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
@@ -92,7 +123,25 @@ No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 - 15%/min.
 #+TBLFM: $3=@2$2*60::@2$6=@2$3*@2$5-(@2$3*@2$5*0.15)::@3$3=@3$2*60::@3$6=@3$3*@3$5-(@3$3*@3$5*0.15)
 
 
-** Classes de Equivalência para horário de tarifa com desconto (TarifComDesc) de 50% 
+** Classes de Equivalência para horário de Tarifa com Desconto (TarifComDesc) Sem Desc Adic de 50% 
+| Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
+| Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+| Mt                  | DD/MM/AA:18:00:01 <= Mt < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
+| Du = (Mt-Mi)        | Du < 60                                       | Du < 60                                     |
+
+** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc + DescAdicional) de 50% 
+    Mi >=8 e Mt > 18h
+| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
+| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
+| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
+| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
+
+ C-u C-u C-c . (Insere timestamp)
+ C-u C-c * (Recalcula tabela)
+ C-' (Editar formula)
+
+
+** Classes de Equivalência para horário de tarifa diferencial (TarifDif)
 *** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice)
     Mi >= 18h e Mt > 8h 
 | Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
@@ -107,24 +156,6 @@ No caso de Du >= 60 a cobrança já não é mais de 0.40/min e sim 0.40 - 15%/min.
 | Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
 | Du = (Mt-Mi)        | Du < 60            | Du > 60              |
 
-** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc) de 50% mais 15% de desconto
-*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice) + Desc Adicional
-    Mi >= 18h e Mt > 8h 
-| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-| Mi                  | Mi >= DD/MM/AA:18h | Mi >= DD/MM/AA:8h    |
-| Mt                  | Mt >= DD/MM/AA:8h  | Mt qualquer          |
-| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
-
-*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa) + Desc Adicional
-    Mi >=8 e Mt > 18h
-| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
-| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
-| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
-
- C-u C-u C-c . (Insere timestamp)
- C-u C-c * (Recalcula tabela)
- C-' (Editar formula)
 
 
 * Casos de testes
