@@ -159,39 +159,106 @@ public class AppTest
         String label8="###[6 15] [TarifComDesc SemDescAdic] (Explora vlr limite anterior 8h do dia Seguinte: ligacao de 59 min que termina as 8 menos 1 segundo) ";
         LocalDateTime mi8 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(60);
         LocalDateTime mt8 = mi8.plusMinutes(59);
-        double vlr8 = 11;
+        double vlr8 = 11;        
         String tipoDeTarificacao8 = "TarifComDesc";
+        
+//*** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao (Sem Desc Adicional) (Vice)        
+//        | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
+//        | Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+//        | Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
+//        | Du = (Mt-Mi)        | Du < 60                                     | Du qualquer                                 |
+
+        String label9="###[19] [TarifDif SemDescAdic] (Ligacao de uma classe tipica valido: ligacao de 20 min das 7:50 as 8:10) ";
+        LocalDateTime mi9 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(60);
+        LocalDateTime mt9 = mi9.plusMinutes(59);
+        double vlr9 = 6;
+        
+        String label10="###[21] [TarifDif SemDescAdic] (Explora limite de termino as 8h: ) ";
+        LocalDateTime mi10 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(59);
+        LocalDateTime mt10 = mi10.plusMinutes(59);
+        double vlr10 = 11.8;
+        
+        String label11="###[23] [TarifDif SemDescAdic] (Explorar limite de termino apos as 8h: Ligacao das 7:00:02 as 8:00:01) ";
+        LocalDateTime mi11 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(58);
+        LocalDateTime mt11 = mi11.plusMinutes(59);
+        double vlr11 = 11.8;
+        
+        
+        
+//        *** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao  (Com Desc Adicional) (Vice)
+//        | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
+//        | Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+//        | Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
+//        | Du = (Mt-Mi)        | Du > 60                                     | Du qualquer                                 |
+        
+
+        String label12="###[24] [TarifDif ComDescAdic] (Ligação de 120min de uma classe típica válida: Ligação de 120min a partir das 00h) ";
+        LocalDateTime mi12 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0);
+        LocalDateTime mt12 = mi12.plusMinutes(120);
+        double vlr12 = 24.0;
+        
+        
+        String label13="###[26] [TarifDif ComDescAdic] (Ligação de 120min Explora limite de termino as 8h: Ligação de  	120min que termina 8 em ponto) ";
+        LocalDateTime mi13 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusMinutes(120);
+        LocalDateTime mt13 = mi13.plusMinutes(120);
+        double vlr13 = 24.0;
+        
+
+        String label14="###[28] [TarifDif ComDescAdic] ( Ligação de 120min Explorar limite de termino apos as 8h: Ligação de 120 min que termina 8:00:01) ";
+        LocalDateTime mi14 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds((120*60)-1);
+        LocalDateTime mt14 = mi14.plusMinutes(120);
+        double vlr14 = 24.0;
+                     
+        
+        
+//        *** Para o caso de inicio na tarifa com desconto (parte da tarde) e termino na tarifa padrao (Com Desconto Adicional)  (Vice)
+//        | Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
+//        | Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
+//        | Mt                  | Mt >= DD+1/MM/AA:08:00:00                     | Mt qualquer                                 |
+//        | Du = (Mt-Mi)        | Du > 60                                       | Du < 60                                     |
+
+        
+        String label15="###[29] [TarifDif ComDescAdic] (Ligacao de uma classe valida: Ligação de 8:10min de duração que comeca as 23:50 e termina as 8:00 do dia seguinte ) ";
+        LocalDateTime mi15 = LocalDateTime.of(2015,Month.NOVEMBER,04,23,50);
+        LocalDateTime mt15 = LocalDateTime.of(2015,Month.NOVEMBER,05,8,00);
+        double vlr15 = 98.0;
+        
 
         
         
-//    	*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa)
-//    	    Mi >=8 e Mt > 18h
-//    	| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-//    	| Mi                  | 8h <= Mi <18    | Mi <  DD/MM/AA:8h    |
-//    	| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
-//    	| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
+//        *** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Sem Desconto Adicional) (Versa)
+//        | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
+//        | Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
+//        | Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
+//        | Du = (Mt-Mi)        | Du < 60                                     | Du > 60                                       |
+        
+        String label16="###[30] [TarifDif SemDescAdic] (Ligacao classe valida: Ligacao de 59min que comeca as 17:50:00) ";
+        LocalDateTime mi16 = LocalDateTime.of(2015,Month.NOVEMBER,04,17,50);
+        LocalDateTime mt16 = mi16.plusMinutes(59);
+        double vlr16 = 13.8; 
+        
+        String label17="###[32] [TarifDif SemDescAdic] (Explorar 18h: Ligacao de 59min que comeca as 17:00:59 e termina as 18 em ponto) ";
+        LocalDateTime mi17 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,00).minusMinutes(59);
+        LocalDateTime mt17 = mi17.plusMinutes(59);
+        double vlr17 = 23.6; 
+                
+        String label18="###[33] [TarifDif SemDescAdic] (Explorar limite posterior 18h: Ligacao de 59min que termina 18:00:01) ";
+        LocalDateTime mi18 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,00).minusSeconds((59*60)-1);
+        LocalDateTime mt18 = mi17.plusMinutes(59);
+        double vlr18 = 23.4; //o minuto das 18h custa ,2 
+
+        
+//        *** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Com Desconto Adicional) (Versa)
+//        | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
+//        | Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
+//        | Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
+//        | Du = (Mt-Mi)        | Du < 60                                     | Du > 60                                       |
+        
 
         
         
-        
-        
-//    	** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc) de 50% mais 15% de desconto
-//    	*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  (Vice) + Desc Adicional
-//    	    Mi >= 18h e Mt > 8h 
-//    	| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-//    	| Mi                  | Mi >= DD/MM/AA:18h | Mi >= DD/MM/AA:8h    |
-//    	| Mt                  | Mt >= DD/MM/AA:8h  | Mt qualquer          |
-//    	| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
 
-//    	*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa) + Desc Adicional
-//    	    Mi >=8 e Mt > 18h
-//    	| Variável de Entrada | Classes Eq Válidas | Classes Eq Inválidas |
-//    	| Mi                  | Mi>=DD/MM/AA:8h    | Mi <  DD/MM/AA:8h    |
-//    	| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
-//    	| Du = (Mt-Mi)        | Du > 60            | Du < 60              |
-
-    	
-    	
+        
         return Arrays.asList(new Object[][]{
         	//M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min
         	{label0, mi0, mt0, vlr0, tipoDeTarificacao0}, 
@@ -272,22 +339,58 @@ public class AppTest
         LocalDateTime mt7 = mi7.plusMinutes(60);
         double vlr7 = 11;//teria que ter o desconto adicional
         String tipoDeTarificacao7 = "TarifComDesc"; //essa tem desc adicional
+        
+
+        String label8="###[18] [TarifComDesc SemDescAdic] (Explora vlr limite 60min: ligacao de 120min)";
+        LocalDateTime mi8 = LocalDateTime.of(2015,Month.NOVEMBER,04,0,0);
+        LocalDateTime mt8 = mi8.plusMinutes(120);
+        double vlr8 = 11;//teria que ter o desconto adicional
+        String tipoDeTarificacao8 = "TarifComDesc"; //essa tem desc adicional
+        
 
         
-//
-//        //Invalidas para tarifPadr com descontoadicional
-//        String label3 = "### ";
-//        LocalDateTime mi3 = LocalDateTime.of(2018,Month.NOVEMBER,25,8,0).minusSeconds(1);
-//        LocalDateTime mt3 = mi3.plusMinutes(61);        
-//        double vlr3 = 20.74;
-//        String tipoDeTarificacao3 = "TarifPadr+DescAdicional";
-//
-//        String label4 = "### ";
-//        LocalDateTime mi4 = LocalDateTime.of(2018,Month.NOVEMBER,25,18,0).plusSeconds(1);
-//        LocalDateTime mt4 = mi4.plusMinutes(61);
-//        double vlr4 = 20.74;
-//        String tipoDeTarificacao4 = "TarifPad+DescAdicional";
         
+        String label9="###[20] [TarifDif SemDescAdic] (Ligacao de uma classe tipica INvalido: ligacao de 59 min das 8:00 as 8:59) ";
+        LocalDateTime mi9 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(60);
+        LocalDateTime mt9 = mi9.plusMinutes(59);
+        double vlr9 = 23.6;
+        
+        String label10="###[22] [TarifDif SemDescAdic] (Ligacao de uma classe tipica valido: Explorar limite de termino antes das 8) ";
+        LocalDateTime mi10 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(60);
+        LocalDateTime mt10 = mi10.plusMinutes(59);
+        double vlr10 = 11.8;
+
+
+
+        
+        
+        String label12="###[25] [TarifDif ComDescAdic] (Ligação de 120min de uma classe típica inválida: Ligação de 120min a partir das 10:00h) ";
+        LocalDateTime mi12 = LocalDateTime.of(2015,Month.NOVEMBER,04,10,0);
+        LocalDateTime mt12 = mi12.plusMinutes(120);
+        double vlr12 = 24.0;
+        
+        String label13="###[27] [TarifDif ComDescAdic] (Ligação de 120min Explorar limite de termino antes das 8: Ligação de 120min que termina 1s antes das 8) ";
+        LocalDateTime mi13 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds((120*60)+1);
+        LocalDateTime mt13 = mi13.plusMinutes(120);
+        double vlr13 = 24.0; //como nao termina as 8 em ponto em diante nao he esse vlr que deve ser cobrado
+        
+        
+
+
+        
+        
+        String label16="###[31] [TarifDif SemDescAdic] (Ligacao classe invalida: Ligacao de 59min que comeca as 20:00:00 ) ";
+        LocalDateTime mi16 = LocalDateTime.of(2015,Month.NOVEMBER,04,20,00);
+        LocalDateTime mt16 = mi16.plusMinutes(59);
+        double vlr16 = 13.8; 
+        
+
+        String label17="###[34] [TarifDif SemDescAdic] (Explorar limite anterior 18h: Ligacao de 59 Min que termina as 17:59:59 ) ";
+        LocalDateTime mi17 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,00).minusSeconds((59*60)-1);
+        LocalDateTime mt17 = mi17.plusMinutes(59);
+        double vlr17 = 23.6; 
+        
+
         
         return Arrays.asList(new Object[][]{
         	//tarifPadr
