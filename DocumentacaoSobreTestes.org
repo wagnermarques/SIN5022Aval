@@ -22,16 +22,15 @@
   fração de minutos.
 
   
-
 * Particionamento em classes de equivalência
   
 ** Identifição do domínio de entrada
    + Momento de inicio da chamada
-   + Momento de término da chamada
-     
+   + Momento de término da chamada     
 
 ** Implicações sobre o domínio de entrada relevantes para os testes
    + O dominio de entrada define o tipo de ligação
+
      TarifPadr: Ligação com inicio entre às 8h (inclusive) e 18h (exclusive)
      tarifComDesc: Ligação com início entre às 18h (inclusive) e as 8h
      do dia seguinte (excluse)
