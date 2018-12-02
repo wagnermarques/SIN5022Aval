@@ -31,18 +31,18 @@
 ** Implicações sobre o domínio de entrada relevantes para os testes
    + O dominio de entrada define o tipo de ligação
 
-     TarifPadr: Ligação com inicio entre às 8h (inclusive) e 18h (exclusive)
+     *TarifPadr*: Ligação com inicio entre às 8h (inclusive) e 18h (exclusive)
      
-     tarifComDesc: Ligação com início entre às 18h (inclusive) e as 8h
+     *tarifComDesc*: Ligação com início entre às 18h (inclusive) e as 8h
      do dia seguinte (excluse)
      
-     TarifDif: Uma ligação pode ter início dentro do período da tarifa
+     *TarifDif*: Uma ligação pode ter início dentro do período da tarifa
      padrão e terminar no período da tarifa com desconto e vice versa.
 
 
    + Duração da chamada     
      A Duração da chamada define se a ligação deve sofrer desconto de
-     15% na tarifação, independente do tipo de ligação 
+     15% na tarifação, independente do tipo de ligação. 
 
 
 ** Classes de Equivalência para horário de Tarifa Padrão (TarifPadr)  0.40/min (Sem Desc Adicional)
