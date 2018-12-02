@@ -9,28 +9,18 @@
 : (<%d-%m-%Y-%a> . <%Y-%m-%d %a %H:%M:%S>)
 
 
-* Pressupostos assumidos
-  Considerando que a cobrança é por minuto, é necessário saber se
-  frações de minutos serão cobrados ou não.
-  
-  Por padrão a aplicação tarifa frações de minutos na razão de
-  segundos. Isso quer dizer que se uma ligação começa às 7:30h, o
-  horário inicial é menor que 8:00h porque, a princípio, faz mais
-  sentido. 
-  Entretanto, pode ser que se a cobrança é por minuto, minutos
-  incompletos poderiam não ser válidos para cobrança o que faz até algum
-  sentido também porque um cliente pode dizer que esse minuto incompleto
-  poderia não ser tarifado. Nesse caso uma ligação que inicia às 7:30
-  poderia ter seu momento de início considerado como sendo 8:00h.
-  Portanto, conforme citado, esta aplicação cobra frações de minutos à
-  razão de segundos o que na prática pode-se dizer que a cobrança não
-  é por minutos, mas por segundos. Entretanto, para que o
-  comportamento da aplicação não cobre frações de minutos, ou seja,
-  somente minutos cheios, é só passar a opçao
-  -DtarifaFracaoDeMinutos=false, por padrão é utilizado true.
-  Não tenho certeza no momento em que estou escrevento essa
-  documentação se deu tempo de fazer as duas implementações, favor
-  consultar o wiki do projeto no github.
+* Observações relevantes
+  Considerando que a cobrança é por minuto, é interessante saber se
+  frações de minutos serão cobrados ou não. As classes de
+  equivalencias e os limites consideram cobranças com frações de
+  minutos. 
+  Sendo assim, para testar os limites de uma ligação que termina âs
+  8:00h foram explorados como limites anteriroes e posteriores os
+  horários de 7:00:59 e 8:00:01, respectivamente. 
+  O ideal seria explorar os limites também em unidades de minutos para
+  identificar se, por algum motivo, não estaria havendo cobrança de
+  fração de minutos.
+
   
 
 * Particionamento em classes de equivalência
