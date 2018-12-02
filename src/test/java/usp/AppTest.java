@@ -259,22 +259,27 @@ public class AppTest
         LocalDateTime mt19 = mi19.plusMinutes(120);
         double vlr19 = 26.4; //10 min a .4 = 4,00 + 110* .2 = 22.0 
 
-        String label19="###[37] [TarifDif ComDescAdic] (Explorar limite anterior 18h) ";
-        LocalDateTime mi19 = LocalDateTime.of(2015,Month.NOVEMBER,04,17,50);
-        LocalDateTime mt19 = mi19.plusMinutes(120);
-        double vlr19 = 26.4; //10 min a .4 = 4,00 + 110* .2 = 22.0 
+        String label20="###[37] [TarifDif ComDescAdic] (Explorar 18h em ponto: Ligação de 120min que termina 18h em ponto) ";
+        LocalDateTime mi20 = LocalDateTime.of(2015,Month.NOVEMBER,04,17,50);
+        LocalDateTime mt20 = mi20.plusMinutes(120);
+        double vlr20 = 26.4; //10 min a .4 = 4,00 + 110* .2 = 22.0
         
+        
+        String label21="###[39] [TarifDif ComDescAdic] (Explorar 18h em ponto: Ligação de 120min que termina 18:00:01) ";
+        LocalDateTime mi21 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,00).minusSeconds((120*60)-1);
+        LocalDateTime mt21 = mi21.plusMinutes(120);
+        double vlr21 = 26.4; //10 min a .4 = 4,00 + 110* .2 = 22.0
         
 
         
         return Arrays.asList(new Object[][]{
-        	//M >= 8h e M<18h CobranÃ§a com preÃ§o cheio 0,4 p/min
+
         	{label0, mi0, mt0, vlr0, tipoDeTarificacao0}, 
         	{label1, mi1, mt1, vlr1, tipoDeTarificacao1}, 
         	{label2, mi2, mt2, vlr2, tipoDeTarificacao2},
         	{label3, mi3, mt3, vlr3, tipoDeTarificacao3},
         	{label4, mi4, mt4, vlr4, tipoDeTarificacao4},
-        	//TarifComDesc
+
 
         	{label5, mi5, mt5, vlr5, tipoDeTarificacao5}, 
         	{label6, mi6, mt6, vlr6, tipoDeTarificacao6},
@@ -404,6 +409,13 @@ public class AppTest
         LocalDateTime mt18 = mi18.plusMinutes(120);
         double vlr18 = 24.0; //coloquei os 120 min como com desconto mas o problema aqui e o tipo de ligacao   
 
+
+        String label19="###[38] [TarifDif ComDescAdic] (Explorar limite anterior 18h: Ligação de 120min que termina 17:59:59 ) ";
+        LocalDateTime mi19 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,00).minusSeconds((120*60)+1);
+        LocalDateTime mt19 = mi19.plusMinutes(120);        
+        double vlr19 = 26.4; //10 min a .4 = 4,00 + 110* .2 = 22.0 
+
+        
         
         
         
