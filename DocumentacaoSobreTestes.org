@@ -435,10 +435,12 @@ termina num horário sem desconto.
 #+NAME:Tbl TarifDir (da TarfPadr para TarifComDesc) Com Desconto Adic)
 #+CAPTION: Casos de Testes p/ Tarifa Diferencia: saindo do horário de tarififa padrao para horario de tarifa com Desconto (Com desconto Adicional)
 | obs                           | TC Num | mi                            | mt        |          |
-| Ligacao classe valida         |     34 | 04/Nov/2015 17:50:00          | mi+120Min | valida   |
-| Ligacao classe invalida       |     35 | 04/Nov/2015 20:00:00          | mi+120Min | invalida |
-| Explorar limite anterior 18h  |     36 | 04/Nov/2015 16:59:59 - 120min | mi+120Min | valido   |
-| Explorar limite posterior 18h |     37 | 04/Nov/2015 16:00:00 - 120min | mi+120Min | invalido |
+| Ligacao classe valida         |     35 | 04/Nov/2015 17:50:00          | mi+120Min | valida   |
+| Ligacao classe invalida       |     36 | 04/Nov/2015 20:00:00          | mi+120Min | invalida |
+| Explorar 18h em ponto         |     37 | 04/Nov/2015 16:59:59 - 120min | mi+120Min | valido   |
+| Explorar limite anterior 18h  |     38 | 04/Nov/2015 16:59:59 - 120min | mi+120Min | valido   |
+| Explorar limite posterior 18h |     39 | 04/Nov/2015 16:00:00 - 120min | mi+120Min | invalido |
+
 
 
 #+NAME: TarifDif (da TarifPadr para TarifComDesc) (Com Desconto Adicional)

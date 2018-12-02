@@ -254,7 +254,15 @@ public class AppTest
 //        | Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
 //        | Du = (Mt-Mi)        | Du < 60                                     | Du > 60                                       |
         
+        String label19="###[35] [TarifDif ComDescAdic] (Ligacao classe valida: Ligação de 120min comecando as 17:50:00) ";
+        LocalDateTime mi19 = LocalDateTime.of(2015,Month.NOVEMBER,04,17,50);
+        LocalDateTime mt19 = mi19.plusMinutes(120);
+        double vlr19 = 26.4; //10 min a .4 = 4,00 + 110* .2 = 22.0 
 
+        String label19="###[37] [TarifDif ComDescAdic] (Explorar limite anterior 18h) ";
+        LocalDateTime mi19 = LocalDateTime.of(2015,Month.NOVEMBER,04,17,50);
+        LocalDateTime mt19 = mi19.plusMinutes(120);
+        double vlr19 = 26.4; //10 min a .4 = 4,00 + 110* .2 = 22.0 
         
         
 
@@ -391,6 +399,13 @@ public class AppTest
         double vlr17 = 23.6; 
         
 
+        String label18="###[36] [TarifDif ComDescAdic] (Ligacao classe invalida: Ligacao de 120min a partir das 20:00:00) ";
+        LocalDateTime mi18 = LocalDateTime.of(2015,Month.NOVEMBER,04,20,00);
+        LocalDateTime mt18 = mi18.plusMinutes(120);
+        double vlr18 = 24.0; //coloquei os 120 min como com desconto mas o problema aqui e o tipo de ligacao   
+
+        
+        
         
         return Arrays.asList(new Object[][]{
         	//tarifPadr
