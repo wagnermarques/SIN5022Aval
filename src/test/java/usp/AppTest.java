@@ -150,14 +150,14 @@ public class AppTest
         double vlr6 = 11;
         String tipoDeTarificacao6 = "TarifComDesc";              
     
-        String label7="###[5 15] [TarifComDesc SemDescAdic] (Explora vlr limite Posterior 18h: ligacao de 59 min que comeca as 18h:00:01) ";
+        String label7="###[5 14] [TarifComDesc SemDescAdic] (Explora vlr limite Posterior 18h: ligacao de 59 min que comeca as 18h:00:01) ";
         LocalDateTime mi7 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).plusSeconds(1);
         LocalDateTime mt7 = mi7.plusMinutes(59);
         double vlr7 = 11;
         String tipoDeTarificacao7 = "TarifComDesc";
                                 
-        String label8="###[6 16] [TarifComDesc SemDescAdic] (Explora vlr limite anterior 8h do dia Seguinte: ligacao de 59 min que termina as 8 menos 1 segundo) ";
-        LocalDateTime mi8 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(1);
+        String label8="###[6 15] [TarifComDesc SemDescAdic] (Explora vlr limite anterior 8h do dia Seguinte: ligacao de 59 min que termina as 8 menos 1 segundo) ";
+        LocalDateTime mi8 = LocalDateTime.of(2015,Month.NOVEMBER,04,8,0).minusSeconds(60);
         LocalDateTime mt8 = mi8.plusMinutes(59);
         double vlr8 = 11;
         String tipoDeTarificacao8 = "TarifComDesc";
@@ -171,11 +171,6 @@ public class AppTest
 //    	| Mt                  | Mt< DD/MM/AA:18h   | Mt >= DD/MM/AA:18    |
 //    	| Du = (Mt-Mi)        | Du < 60            | Du > 60              |
 
-        String label9="###[6 16 26] [TarifDif SemDescAdic (TarifPadr->TarifComDesc] (Explora Vlr Tipo de Classe Valida ) ";
-        LocalDateTime mi9 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(1);
-        LocalDateTime mt9 = mi9.plusMinutes(59);
-        double vlr9 = 11;
-        String tipoDeTarificacao9 = "TarifComDesc";
         
         
         

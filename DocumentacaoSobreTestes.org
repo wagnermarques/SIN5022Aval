@@ -182,12 +182,94 @@ queremos observar o comportamento da duração da ligação nas condições
 de tarifa padrão. Por isso, agora ligações que duram 60min ou mais faz
 parte de uma classe válida e menor que 60 uma classe inválida.
 
+#+CAPTION: Casos de Testes para Ligações Com Tarifa Padrao Com Desconto Adicional
+#+NAME:   TarifPadrComDescAdic
+| obs                                 | TC Num | mi                   | mt        |   |
+| Explora vlr limite 60min            |      8 | 04/Nov/2015 15:00:01 | mi+60Min  |   |
+| Explorar vlr limite posterior 60min |      9 | 04/Nov/2015 15:00:01 | mi+120Min |   |
+
+
+#+NAME: TarifPadr+DescAdic
+#+BEGIN_SRC java
+        String label3="###[8] [TarifPadr SemDescAdic] (Explora vlr limite 60min: ligacao de 60min)";
+        LocalDateTime mi3 = LocalDateTime.of(2015,Month.NOVEMBER,04,15,0);
+        LocalDateTime mt3 = mi3.plusMinutes(60);
+        double vlr3 = 23.6;
+        String tipoDeTarificacao3 = "TarifPadr";
+
+        String label4="###[9] [TarifPadr+DescAdic] (Explora vlr limite posterior 60min: ligacao de 120min) ";
+        LocalDateTime mi4 = LocalDateTime.of(2015,Month.NOVEMBER,04,15,0);
+        LocalDateTime mt4 = mi4.plusMinutes(120);
+        double vlr4 = 40.80;
+        String tipoDeTarificacao4 = "TarifPadr-DescAdicional";
+
+#+END_SRC
+
 
 ** Classes de Equivalência para horário de Tarifa com Desconto (TarifComDesc) Sem Desc Adic
 | Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | DD/MM/AA:18:00:00 < Mt < DD+1/MM/AA:08:00:00  | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
 | Du = (Mt-Mi)        | Du < 60                                       | Du < 60                                     |
+
+#+NAME:Tbl TarifComDesc
+#+CAPTION: Casos de testes para horário com Desconto (Sem Desconto Adicional)
+| obs                                    | TC Num | mi                          | mt       |   |
+| Caso típico da classe válida           |     10 | 04/Nov/2015 00:00:00        | mi+20Seg |   |
+| Caso típico de classe inválida         |     11 | 04/Nov/2015 10:00:00        | mi+20Seg |   |
+| Explorar Vlr Limite 18h                |     12 | 04/Nov/2015 18:00:00        | mi+59Min |   |
+| Explora Vlr Limite anterior 18h        |     13 | 04/Nov/2015 18:00:00 - 2Seg | mi+59Min |   |
+| Explora Vlr Limite posterior 18H       |     14 | 04/Nov/2015 18:00:00 + 1Seg | mi+59Min |   |
+| Explorar Limite anterior de termino 8h |     15 | 04/Nov/2015 07:01:59        | mi+59Min |   |
+| Explorar Limite posterior Mt 8h        |     16 | 04/Nov/2015 07:01:00        | mi+59Min |   |
+
+
+
+#+NAME:TarifComDesc
+#+BEGIN_SRC java
+    	String label5="###[1 10] [TarifComDesc SemDescAdic] (pegando um vlr tipico de uma classe valida) ";
+        LocalDateTime mi5= LocalDateTime.of(2015,Month.NOVEMBER,04,0,0);
+        LocalDateTime mt5 = mi5.plusMinutes(20);        
+        double vlr5 = 4.0;
+        String tipoDeTarificacao5 = "TarifComDesc";
+
+    	String label4="###[2 11] [TarifComDesc SemDescAdic] (pegando um vlr tipico de uma classe INvalida) ";
+        LocalDateTime mi4= LocalDateTime.of(2015,Month.NOVEMBER,04,10,0);
+        LocalDateTime mt4 = mi4.plusMinutes(20);        
+        double vlr4 = 8.0;
+        String tipoDeTarificacao4 = "TarifPadr";
+
+        String label6="###[3 12] [TarifComDesc SemDescAdic] (Explora vlr limite 18h: Ligacao de 59min que comeca 18h em ponto) ";    	
+        LocalDateTime mi6 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0);
+        LocalDateTime mt6 = mi6.plusMinutes(59);        
+        double vlr6 = 11;
+        String tipoDeTarificacao6 = "TarifComDesc";              
+
+        String label5="###[4 13] [TarifComDesc SemDescAdic] (Explora vlr limite anterior as 18h: Ligacao de 59min que comeca 17h:59min:59Seg";
+        LocalDateTime mt5 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(2);//8 horas menos dois segundos
+        LocalDateTime mi5 = mt5.minusMinutes(59);
+        double vlr5 = 11;
+        String tipoDeTarificacao5 = "TarifComDesc";
+
+        String label7="###[5 14] [TarifComDesc SemDescAdic] (Explora vlr limite Posterior 18h: ligacao de 59 min que comeca as 18h:00:01) ";
+        LocalDateTime mi7 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).plusSeconds(1);
+        LocalDateTime mt7 = mi7.plusMinutes(59);
+        double vlr7 = 11;
+        String tipoDeTarificacao7 = "TarifComDesc";        
+
+        String label8="###[6 15] [TarifComDesc SemDescAdic] (Explora vlr limite anterior 8h do dia Seguinte: ligacao de 59 min que termina as 8 menos 1 segundo) ";
+        LocalDateTime mi8 = LocalDateTime.of(2015,Month.NOVEMBER,04,18,0).minusSeconds(1);
+        LocalDateTime mt8 = mi8.plusMinutes(59);
+        double vlr8 = 11;
+        String tipoDeTarificacao8 = "TarifComDesc";        
+
+        String label6="###[7 16] [TarifComDesc SemDescAdic] (Explora vlr limite posterior as 8h do dia seguinte: ligacao de 59min que termina as 8h do dia seguinte)";
+        LocalDateTime mi6 = LocalDateTime.of(2015,Month.NOVEMBER,05,8,0).minusMinutes(59);
+        LocalDateTime mt6 = mi6.plusMinutes(59);
+        double vlr6 = 11;//isso da outro valor
+        String tipoDeTarificacao6 = "TarifComDesc+DescAdic";
+
+#+END_SRC
 
 
 ** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc + DescAdicional) de 50% 
@@ -196,9 +278,25 @@ parte de uma classe válida e menor que 60 uma classe inválida.
 | Mt                  | DD/MM/AA:18:00:00 < Mt < DD+1/MM/AA:08:00:00  | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
 | Du = (Mt-Mi)        | Du >= 60                                      | Du < 60                                     |
 
+#+NAME:Tbl TarifComDesc+DescAdic
+#+CAPTION: Casos de testes para horário com Desconto (Com Desconto Adicional)
+| obs                            | TC Num | mi                   | mt       |   |
+| Explora ligacao com 60min      |     17 | 04/Nov/2015 00:00:00 | mi+60Min |   |
+| Explorar Ligacao mais de 60Min |     18 | 04/Nov/2015 00:00:00 | mi+120Min |   |
+
+#+NAME:TarifComDesc
+#+BEGIN_SRC 
+        String label7="###[8 17] [TarifComDesc SemDescAdic] (Explora vlr limite 60min: ligacao de 60min)";
+        LocalDateTime mi7 = LocalDateTime.of(2015,Month.NOVEMBER,04,0,0);
+        LocalDateTime mt7 = mi7.plusMinutes(60);
+        double vlr7 = 11;//teria que ter o desconto adicional
+        String tipoDeTarificacao7 = "TarifComDesc"; //essa tem desc adicional
+#+END_SRC
+
+
 
 ** Classes de Equivalência para horário de tarifa diferencial (TarifDif)
-*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao Sem Desc Adicional (Vice)
+*** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao Sem Desc Adicional (Vice)
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
@@ -208,11 +306,30 @@ terminam (Mt) de 08:00h em ponto em diante. Não precisa testar
 ligacoes que começam as 18:00h porque mesmo que dure até as 8:00h da
 manhã do dia seguinte 
 
-*** Para o caso de inicio na tarifa com desconto e termino na tarifa padrao  Com Desc Adicional (Vice)
+#+NAME:Tbl TarifDir (da Padr p/ ComDesc [manha] para TarifPadr Sem Desconto Adic)
+#+CAPTION: Casos de Testes p/ Tarifa Diferencial saindo do horário de tarif com desconto (manha) para horario de tarifa padrao (Sem Desc Adicional)
+| obs                                    | TC Num | mi                           | mt       |          |
+| Ligacao de uma classe tipica valido    |     19 | 04/Nov/2015 07:50:00         | mi+59Min | valido   |
+| Ligacao de uma classe tipica invalida  |     20 | 04/Nov/2015 08:00:00         | mi+59Min | invalido |
+| Explora limite de termino as 8h        |     21 | 04/Nov/2015 08:00:00 - 59Min | mi+59Min | valido   |
+| Explorar limite de termino antes das 8 |     22 | 04/Nov/2015 07:59:59 - 59Min | mi+59Min | invalido |
+| Explorar limite de termino apos as 8h  |     23 | 04/Nov/2015 08:00:01 - 59Min | mi+59Min | valido   |
+
+
+*** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao  Com Desc Adicional (Vice)
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
 | Du = (Mt-Mi)        | Du > 60                                     | Du qualquer                                 |
+
+#+NAME:Tbl TarifDir (da Tarifa ComDesc (de manha) para Tarif Padrao Com Desconto Adic)
+#+CAPTION: Casos de Testes p/ Tarifa Diferencia saindo do horário de tarif com desc (manha) para horario de tarifa  padrão (Com Desconto Adicional)
+| obs                                                      | TC Num | mi                            | mt        |          |
+| Ligação de 120min de uma classe típica válida            |     24 | 04/Nov/2015 00:00:00          | mi+120Min |          |
+| Ligação de 120min de uma classe típica inválida          |     25 | 04/Nov/2015 10:00:00          | mi+120min |          |
+| Ligação de 120min Explora limite de termino as 8h        |     26 | 04/Nov/2015 08:00:00 - 120Min | mi+120Min | valido   |
+| Ligação de 120min Explorar limite de termino antes das 8 |     27 | 04/Nov/2015 06:59:59 - 120Min | mi+59Min  | invalido |
+| Ligação de 120min Explorar limite de termino apos as 8h  |     28 | 04/Nov/2015 07:00:01 - 120Min | mi+59Min  | valido   |
 
 
 *** Para o caso de inicio na tarifa com desconto (parte da tarde) e termino na tarifa padrao Com Desconto Adicional  (Vice)
@@ -228,15 +345,40 @@ não é de tarifação com desconto, não importa qdo termina porque não
 vai dar pra testar uma ligação que começa num horário com desconto e
 termina num horário sem desconto.
 
-*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Versa)
+#+NAME:Tbl TarifDir (da ComDesc (parte da tarde) e termino no tarfPadr Com Desconto Adic)
+#+CAPTION: Casos de Testes p/ Tarifa Diferencia: saindo do horário de tarififa com desconto para horario de tarifa padrao ( desconto Adicional)
+| obs                          | TC Num | mi                   | mt                      |        |
+| Ligacao de uma classe valida |     29 | 04/Nov/2015 17:50:00 | proximo dia as 08:00:00 | valido |
+
+
+*** Para o caso de inicio na tarifa padrao e término na tarifa sem desconto (Versa)
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
 | Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
 | Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
 | Du = (Mt-Mi)        | Du < 60                                     | Du > 60                                       |
 
 
+#+NAME:Tbl TarifDir (da TarfPadr para TarifComDesc) sem Desconto Adic)
+#+CAPTION: Casos de Testes p/ Tarifa Diferencia: saindo do horário de tarififa padrao para horario de tarifa com Desconto (Sem desconto Adicional)
+| obs                           | TC Num | mi                           | mt       |          |
+| Ligacao classe valida         |     30 | 04/Nov/2015 17:50:00         | mi+59Min | valida   |
+| Ligacao classe invalida       |     31 | 04/Nov/2015 20:00:00         | mi+59Min | invalida |
+| Explorar limite anterior 18h  |     32 | 04/Nov/2015 17:59:59 - 59min | mi+59Min | valido   |
+| Explorar limite posterior 18h |     33 | 04/Nov/2015 18:00:00 - 59min | mi+59Min | invalido |
 
-* temp
- C-u C-u C-c . (Insere timestamp)
- C-u C-c * (Recalcula tabela)
- C-' (Editar formula)
+
+*** Para o caso de inicio na tarifa padrao e término na tarifa COM desconto (Versa)
+| Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
+| Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
+| Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
+| Du = (Mt-Mi)        | Du < 60                                     | Du > 60                                       |
+
+#+NAME:Tbl TarifDir (da TarfPadr para TarifComDesc) Com Desconto Adic)
+#+CAPTION: Casos de Testes p/ Tarifa Diferencia: saindo do horário de tarififa padrao para horario de tarifa com Desconto (Com desconto Adicional)
+| obs                           | TC Num | mi                            | mt        |          |
+| Ligacao classe valida         |     34 | 04/Nov/2015 17:50:00          | mi+120Min | valida   |
+| Ligacao classe invalida       |     35 | 04/Nov/2015 20:00:00          | mi+120Min | invalida |
+| Explorar limite anterior 18h  |     36 | 04/Nov/2015 16:59:59 - 120min | mi+120Min | valido   |
+| Explorar limite posterior 18h |     37 | 04/Nov/2015 16:00:00 - 120min | mi+120Min | invalido |
+
+
