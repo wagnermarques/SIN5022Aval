@@ -1,13 +1,5 @@
 #+Title: Documentação Sobre a Realização dos Testes
 
-#+BEGIN_SRC emacs-lisp
-(setq org-time-stamp-formats
-      '("<%d-%m-%Y-%a>" . "<%Y-%m-%d %a %H:%M:%S>"))
-#+END_SRC
-
-#+RESULTS:
-: (<%d-%m-%Y-%a> . <%Y-%m-%d %a %H:%M:%S>)
-
 
 * Observações relevantes
   Considerando que a cobrança é por minuto, é interessante saber se
@@ -45,7 +37,7 @@
      15% na tarifação, independente do tipo de ligação. 
 
 
-** Classes de Equivalência para horário de Tarifa Padrão (TarifPadr)  0.40/min (Sem Desc Adicional)
+** Classes de Equivalência para horário de Tarifa Padrão (TarifPadr)  R$ 0.40/min (Sem Desc Adicional)
    M >= 8h e M<18h Cobrança com preço cheio 0,4 p/min
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
 | Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
@@ -165,7 +157,7 @@ uma classe inválida.
 
 
 
-** Classes de Equivalência para horário de Tarifa Padrão (TafifPadr) + Desconto Adicional
+** Classes de Equivalência para horário de Tarifa Padrão (TafifPadr) (Com Desconto Adicional)(
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
 | Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
 | Mt                  | DD/MM/AA:08:00:00 < Mi < DD/MM/AA:18:00:00  | DD/MM/AA:18:00:00 <= Mt < DD+1/MM/AA:08:00:00 |
@@ -199,7 +191,7 @@ parte de uma classe válida e menor que 60 uma classe inválida.
 #+END_SRC
 
 
-** Classes de Equivalência para horário de Tarifa com Desconto (TarifComDesc) Sem Desc Adic
+** Classes de Equivalência para horário de Tarifa com Desconto (TarifComDesc) (Sem Desc Adicional)
 | Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | DD/MM/AA:18:00:00 < Mt < DD+1/MM/AA:08:00:00  | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
@@ -265,7 +257,7 @@ parte de uma classe válida e menor que 60 uma classe inválida.
 #+END_SRC
 
 
-** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc + DescAdicional) de 50% 
+** Classes de Equivalência para horário de tarifa com desconto (TafifComDesc) (Com Desc Adicional)
 | Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | DD/MM/AA:18:00:00 < Mt < DD+1/MM/AA:08:00:00  | DD/MM/AA:08:00:00 <= Mt < DD/MM/AA:18:00:00 |
@@ -289,7 +281,7 @@ parte de uma classe válida e menor que 60 uma classe inválida.
 
 
 ** Classes de Equivalência para horário de tarifa diferencial (TarifDif)
-*** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao Sem Desc Adicional (Vice)
+*** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao (Sem Desc Adicional) (Vice)
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
@@ -309,7 +301,7 @@ manhã do dia seguinte
 | Explorar limite de termino apos as 8h  |     23 | 04/Nov/2015 08:00:01 - 59Min | mi+59Min | valido   |
 
 
-*** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao  Com Desc Adicional (Vice)
+*** Para o caso de inicio na tarifa com desconto (de manha) e termino na tarifa padrao  (Com Desc Adicional) (Vice)
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:00:00:00 <= Mi < DD/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | Mt > = DD/MM/AA:08:00:00                    | Mt qualquer                                 |
@@ -325,7 +317,7 @@ manhã do dia seguinte
 | Ligação de 120min Explorar limite de termino apos as 8h  |     28 | 04/Nov/2015 07:00:01 - 120Min | mi+59Min  | valido   |
 
 
-*** Para o caso de inicio na tarifa com desconto (parte da tarde) e termino na tarifa padrao Com Desconto Adicional  (Vice)
+*** Para o caso de inicio na tarifa com desconto (parte da tarde) e termino na tarifa padrao (Com Desconto Adicional)  (Vice)
 | Variável de Entrada | Classes Eq Válidas                            | Classes Eq Inválidas                        |
 | Mi                  | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 |
 | Mt                  | Mt >= DD+1/MM/AA:08:00:00                     | Mt qualquer                                 |
@@ -344,7 +336,7 @@ termina num horário sem desconto.
 | Ligacao de uma classe valida |     29 | 04/Nov/2015 17:50:00 | proximo dia as 08:00:00 | valido |
 
 
-*** Para o caso de inicio na tarifa padrao e término na tarifa sem desconto (Versa)
+*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Sem Desconto Adicional) (Versa)
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
 | Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
 | Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
@@ -360,7 +352,7 @@ termina num horário sem desconto.
 | Explorar limite posterior 18h |     33 | 04/Nov/2015 18:00:00 - 59min | mi+59Min | invalido |
 
 
-*** Para o caso de inicio na tarifa padrao e término na tarifa COM desconto (Versa)
+*** Para o caso de inicio na tarifa padrao e término na tarifa com desconto (Com Desconto Adicional) (Versa)
 | Variável de Entrada | Classes Eq Válidas                          | Classes Eq Inválidas                          |
 | Mi                  | DD/MM/AA:08:00:00 <= Mi < DD/MM/AA:18:00:00 | DD/MM/AA:18:00:00 <= Mi < DD+1/MM/AA:08:00:00 |
 | Mt                  | Mt > DD/MM/AA:18h                           | Mt >= DD/MM/AA:18                             |
@@ -374,4 +366,14 @@ termina num horário sem desconto.
 | Explorar limite anterior 18h  |     36 | 04/Nov/2015 16:59:59 - 120min | mi+120Min | valido   |
 | Explorar limite posterior 18h |     37 | 04/Nov/2015 16:00:00 - 120min | mi+120Min | invalido |
 
+
+
+* Nao Exportar isso
+#+BEGIN_SRC emacs-lisp
+(setq org-time-stamp-formats
+      '("<%d-%m-%Y-%a>" . "<%Y-%m-%d %a %H:%M:%S>"))
+#+END_SRC
+
+#+RESULTS:
+: (<%d-%m-%Y-%a> . <%Y-%m-%d %a %H:%M:%S>)
 
