@@ -1,5 +1,17 @@
 #+Title: Documentação Sobre a Realização dos Testes
 
+* Apresentação do documento
+  Este texto é a resposta do item 1 da parte prática da prova de
+  SIN5022/2018.
+  Conforme solicitado foram escritos os casos de testes para cobertura
+  das partições de equivalências encontradas e valores limites.
+  Os testes foram escritos em java utilizando junit, mas ainda são
+  caixa-preta porque não se levou em consideração o código. Fiz um
+  pedacinho do código só pra ver se a escrita dos testes estavam ok
+  mas os casos de testes em sí não consideram nada sobre o código por
+  serem testes funcionais.
+  O repositório dos testes escritos e onde pode ser encontrado esse
+  arquivo é https://github.com/wagnermarques/SIN5022Aval
 
 * Observações relevantes
   Considerando que a cobrança é por minuto, é interessante saber se
@@ -18,6 +30,7 @@
   aproximar dos extremos maior são as probabilidades de se detectar
   erros.
   
+
 * Particionamento em classes de equivalência
   
 ** Identifição do domínio de entrada
